@@ -3,12 +3,32 @@
 # https://www.rdocumentation.org/packages/Seurat/versions/3.1.4/topics/ReadH5AD
 
 #############
-rm(list = ls())
+rm(list = ls()) #Delete variable
 
-#############
+############# Library list #############
+
+library(SummarizedExperiment)
+library(Seurat)
+library(SeuratDisk)
+library(stringr)
+library(SeuratWrappers)
+library(monocle3)
+library(AnnotationDbi)
+library(org.Mm.eg.db)
+library('org.Hs.eg.db')
+library(Hmisc)
+library(tidyverse)
+library(garnett)
+library(cicero)
+
+############# Library list #############
+
+
 library(SummarizedExperiment)
 library(Seurat)
 # https://satijalab.org/seurat/install.html # https://rdrr.io/rforge/matrixStats/man/matrixStats-package.html
+# https://blog.csdn.net/zengwanqin/article/details/114895417
+# https://www.youtube.com/watch?v=Eucn_BJ8EJI
 
 library(SeuratDisk)
 # https://github.com/mojaveazure/seurat-disk
@@ -16,7 +36,7 @@ library(SeuratDisk)
 # # https://cellexalvr.med.lu.se/cellexalvrr-vignette
 
 PathName = setwd(getwd())
-RVersion = "20210209V1"
+RVersion = "20210406V1"
 dir.create(paste0(PathName,"/",RVersion))
 
 
@@ -37,8 +57,8 @@ Main_Group2 = c("KRAS","EXO1","NSUN2","MUC1","AMBP","FXYD2")
 EMT_Meta = c("ANLN","APLP2","CD63","CDH2","CLIC4","CTSB","CX3CR1","DSG2","EDNRB")
 candidates14 = c("BRIP1","KIF23","TOP2A","FOSL1","FAM25A","ANLN","NCAPH","KRT9","MCM4","CKAP2L","CENPE","RACGAP1","DTL","RAD51AP1")
 
-
-
+DREAM_complex= c("RBL2","E2F4","E2F5","TFDP1","TFDP2")
+Regulators= c("TP53","YBX1","E2F1")
 #######################################################################################################
 
 
@@ -418,7 +438,7 @@ marker_test_res_DucT2 <- top_markers(cds_subset_K100, group_cells_by="cluster",
 top_specific_markers_DucT2 <- marker_test_res_DucT2 %>%
   filter(fraction_expressing >= 0.10) %>%
   group_by(cell_group) %>%
-  top_n(25, pseudo_R2)
+  top_n(10, pseudo_R2)
 
 top_specific_marker_ids_DucT2  <- unique(top_specific_markers_DucT2  %>% pull(gene_id))
 
@@ -460,6 +480,7 @@ DataCellcycle_sub_DucT2_TOP2ACenter <- as(as.matrix(DataCellcycle_sub_DucT2_TOP2
 
 marrow_sub_DucT2_TOP2ACenter <- CreateSeuratObject(counts = DataCellcycle_sub_DucT2_TOP2ACenter)
 marrow_sub_DucT2_TOP2ACenter <- NormalizeData(marrow_sub_DucT2_TOP2ACenter)
+#marrow_sub_DucT2_TOP2ACenter <- FindVariableFeatures(marrow_sub_DucT2_TOP2ACenter, selection.method = "vst")
 marrow_sub_DucT2_TOP2ACenter <- FindVariableFeatures(marrow_sub_DucT2_TOP2ACenter, selection.method = "vst")
 marrow_sub_DucT2_TOP2ACenter <- ScaleData(marrow_sub_DucT2_TOP2ACenter, features = rownames(marrow_sub_DucT2_TOP2ACenter))
 #錯誤: 無法配置大小為 3.9 Gb 的向量
@@ -709,11 +730,38 @@ plot_genes_in_pseudotime(AFD_lineage_cds_sub_DucT2,
 
 
 
+########################  Heterogeneity center and Ori Ductal2 ##########################
+cds_sub_HeteroCent_OriDucT2 <- choose_cells(cds)
+#cds_subset <- reduce_dimension(cds_subset)
+plot_cells(cds_sub_HeteroCent_OriDucT2, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 2)
+
+cds_sub_HeteroCent_K100 <- cluster_cells(cds_sub_HeteroCent_OriDucT2,k = 100, resolution=1e-5)
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_","_sub_HeteroCent_OriDucT_cluster_clu_K100_1",".png")) # 設定輸出圖檔
+plot_cells(cds_sub_HeteroCent_K100, label_cell_groups=FALSE, color_cells_by = "cluster", show_trajectory_graph = FALSE,cell_size = 2)
+dev.off() # 關閉輸出圖檔
+
+##  Find marker genes expressed by each cluster
+marker_test_HeteroCent_OriDucT2 <- top_markers(cds_sub_HeteroCent_K100, group_cells_by="cluster", 
+                                     reference_cells=1000, cores=8)
+
+top_specific_markers_HeteroCent_OriDucT2 <- marker_test_HeteroCent_OriDucT2 %>%
+  filter(fraction_expressing >= 0.10) %>%
+  group_by(cell_group) %>%
+  top_n(25, pseudo_R2)
+
+top_specific_marker_ids_HeteroCent_OriDucT2  <- unique(top_specific_markers_HeteroCent_OriDucT2  %>% pull(gene_id))
 
 
+plot_genes_by_group(cds_sub_HeteroCent_K100,
+                    top_specific_marker_ids_HeteroCent_OriDucT2,
+                    group_cells_by="cluster",
+                    ordering_type="maximal_on_diag",
+                    max.size=3)
 
+top_specific_markers_HeteroCent_OriDucT2 <- data.frame(top_specific_markers_HeteroCent_OriDucT2)
 
-
+top_marker_HeteroCent_OriDucT2_Sub1 <- top_specific_markers_HeteroCent_OriDucT2[top_specific_markers_HeteroCent_OriDucT2$cell_group =="1",]
+top_marker_HeteroCent_OriDucT2_Sub2 <- top_specific_markers_HeteroCent_OriDucT2[top_specific_markers_HeteroCent_OriDucT2$cell_group =="2",]
 
 
 
