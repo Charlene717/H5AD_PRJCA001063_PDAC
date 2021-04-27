@@ -6,6 +6,8 @@
 #   return(OUTPUT)
 # }
 
+GThreshold_Pos <- 0.03
+GThreshold_Neg <- -0.03
 
 PCA_Threshold_Pos <- function(PCA_F_T3,TN){
 
@@ -13,8 +15,8 @@ PCA_F_T3_PC_SUM <- list()
 for(i in 1:50){
   LIstPC <- as.data.frame(PCA_F_T3[,i])
   LIstPC <-cbind(row.names(LIstPC),LIstPC)
-  LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2]>=0.04,])
-  colnames(LIstPC2) <- c("gene",paste0("PCA_F_T",TN,"_PC",i))
+  LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2] >= GThreshold_Pos,])
+  colnames(LIstPC2) <- c("gene",paste0("PCA_P_T",TN,"_PC",i))
   #  assign(paste0("PCA_F_T3_PC",i),as.data.frame(PCA_F_T3[,i])) 
   #Error  assign(paste0("PCA_F_T3_PC",i),PCA_F_T3[,PCA_F_T3[,i]>=0.09]) 
   #Too much#  assign(paste0("PCA_F_T3_PC",i),LIstPC2)
@@ -28,7 +30,7 @@ for(i in 1:50){
 PCA_F_T3_PC_SUM2 <- data.frame()
 
 for(i in 1:length(PCA_F_T3_PC_SUM)){
-  String1_1 <- paste0(">", "PCA_F_T",TN,"_PC",i,sep = " ")
+  String1_1 <- paste0(">", "PCA_P_T",TN,"_PC",i,sep = " ")
   String1_2 <- paste("expressed:", PCA_F_T3_PC_SUM[[i]][1], sep = " ")
   
   for (j in 2:length(PCA_F_T3_PC_SUM[[i]])) {
@@ -45,7 +47,7 @@ for(i in 1:length(PCA_F_T3_PC_SUM)){
 }
 
 # Write
-out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_PCA_T",TN,"_PT.txt")
+out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_PT",GThreshold_Pos,".txt")
 write.table(PCA_F_T3_PC_SUM2,file = out_file2, quote = F, row.names = F, col.names = F)
 
 PCA_Threshold_Output <- PCA_F_T3_PC_SUM
@@ -91,7 +93,7 @@ PCA_Threshold_Neg <- function(PCA_F_T3,TN){
   for(i in 1:50){
     LIstPC <- as.data.frame(PCA_F_T3[,i])
     LIstPC <-cbind(row.names(LIstPC),LIstPC)
-    LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2]<=-0.04,])
+    LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2] <= GThreshold_Neg,])
     colnames(LIstPC2) <- c("gene",paste0("PCA_N_T",TN,"_PC",i))
     #  assign(paste0("PCA_F_T3_PC",i),as.data.frame(PCA_F_T3[,i])) 
     #Error  assign(paste0("PCA_F_T3_PC",i),PCA_F_T3[,PCA_F_T3[,i]>=0.09]) 
@@ -123,7 +125,7 @@ PCA_Threshold_Neg <- function(PCA_F_T3,TN){
   }
   
   # Write
-  out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_PCA_T",TN,"_NT.txt")
+  out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_NT",GThreshold_Neg,".txt")
   write.table(PCA_F_T3_PC_SUM2,file = out_file2, quote = F, row.names = F, col.names = F)
   
   PCA_Threshold_Output <- PCA_F_T3_PC_SUM
