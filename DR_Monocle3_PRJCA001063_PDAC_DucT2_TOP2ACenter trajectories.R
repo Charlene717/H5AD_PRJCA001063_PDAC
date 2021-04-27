@@ -3,6 +3,10 @@ cds_sub_DucT2_TOP2ACenter_T2 <- choose_graph_segments(cds_sub_DucT2 ,clear_cds =
 
 plot_cells(cds_sub_DucT2_TOP2ACenter_T2, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE) + scale_color_manual(values = colorsT)
 
+plot_cells(cds_sub_DucT2_TOP2ACenter_T2, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colorsT)
+
+plot_cells(cds_sub_DucT2_TOP2ACenter_T8, genes=c("TOP2A","NTS"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) 
+
 
 CCdata_sub_DucT2_TOP2ACenter_T2 <- cds_sub_DucT2_TOP2ACenter_T2@assays@data@listData$counts
 colnames(CCdata_sub_DucT2_TOP2ACenter_T2) = cds_sub_DucT2_TOP2ACenter_T2@assays@data@listData[["counts"]]@Dimnames[[2]]
@@ -101,6 +105,63 @@ png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T
 DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T3, dims = c(1:18))
 dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
+DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T2, dims = c(3,4),nfeatures = 50, fast = FALSE)+
+ ggplot2::scale_fill_gradientn(colors = c("steelblue1", "white", "tomato"))
+
+DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T2, dims = c(4),nfeatures = 50, fast = FALSE)+
+  ggplot2::scale_fill_gradientn(colors = c("steelblue1", "white", "tomato"))
+
+
+PCA_F_T3 <- marrow_sub_DucT2_TOP2ACenter_T3@reductions[["pca"]]@feature.loadings
+write.table(PCA_F_T3,paste0(PathName,"/",RVersion,"/",RVersion,"_","DucT2_TOP2ACenter_PCA_T3.txt"),sep = "\t", quote = FALSE, na = "NA")
+write.table(PCA_F_T3,paste0(PathName,"/",RVersion,"/",RVersion,"_","DucT2_TOP2ACenter_PCA_T3.csv"),sep = ",", quote = FALSE, na = "NA")
+
+library(dplyr)
+
+# library(rJava)
+# library(xlsxjars)
+# library(xlsx)
+library(writexl)
+
+
+PCA_F_T3_PC_SUM <- list()
+for(i in 1:3){
+  LIstPC <- as.data.frame(PCA_F_T3[,i])
+  LIstPC <-cbind(row.names(LIstPC),LIstPC)
+  LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2]>=0.04,])
+  colnames(LIstPC2) <- c("gene",paste0("PCA_F_T3_PC",i))
+#  assign(paste0("PCA_F_T3_PC",i),as.data.frame(PCA_F_T3[,i])) 
+#Error  assign(paste0("PCA_F_T3_PC",i),PCA_F_T3[,PCA_F_T3[,i]>=0.09]) 
+#Too much#  assign(paste0("PCA_F_T3_PC",i),LIstPC2)
+  
+  PCA_F_T3_PC_SUM[[i]] <- as.matrix(LIstPC2[,1])
+#  PCA_F_T3_PC_SUM[[i]] <- LIstPC2[,1]
+  
+}
+
+# Format convert  
+PCA_F_T3_PC_SUM2 <- data.frame()
+
+for(i in 1:length(PCA_F_T3_PC_SUM)){
+  String1_1 <- paste(">", "PCA_F_T3_PC",i,sep = " ")
+  String1_2 <- paste("expressed:", PCA_F_T3_PC_SUM[[i]][1], sep = " ")
+  
+  for (j in 2:length(PCA_F_T3_PC_SUM[[i]])) {
+    String1_2 <- paste(String1_2,PCA_F_T3_PC_SUM[[i]][j], sep = ", ")  
+  }
+  
+  String1_3 <- ""
+  
+  a <- 3*i
+  PCA_F_T3_PC_SUM2[a-2,1] <- String1_1
+  PCA_F_T3_PC_SUM2[a-1,1] <- String1_2
+  PCA_F_T3_PC_SUM2[a,1] <- String1_3
+  
+}
+# write.table(PCA_F_T3_PC_SUM,paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T3_PCAT.txt"),sep = "\t", quote = FALSE, na = "NA")
+# Write
+out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_PCA_T3_FT.txt")
+write.table(PCA_F_T3_PC_SUM2,file = out_file2, quote = F, row.names = F, col.names = F)
 
 ########################  DucT2_TOP2ACenter trajectories_T4 ##########################
 cds_sub_DucT2_TOP2ACenter_T4 <- choose_graph_segments(cds_sub_DucT2 ,clear_cds = FALSE)
