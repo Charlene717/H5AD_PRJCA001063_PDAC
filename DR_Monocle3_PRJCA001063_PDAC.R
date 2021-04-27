@@ -24,21 +24,12 @@ library(cicero)
 ############# Library list #############
 
 
-library(SummarizedExperiment)
-library(Seurat)
-# https://satijalab.org/seurat/install.html # https://rdrr.io/rforge/matrixStats/man/matrixStats-package.html
-# https://blog.csdn.net/zengwanqin/article/details/114895417
-# https://www.youtube.com/watch?v=Eucn_BJ8EJI
 
-library(SeuratDisk)
-# https://github.com/mojaveazure/seurat-disk
-# library(cellexalvrR)
-# # https://cellexalvr.med.lu.se/cellexalvrr-vignette
+############# Read file settings #############
 
 PathName = setwd(getwd())
-RVersion = "20210406V1"
+RVersion = "20210427V1"
 dir.create(paste0(PathName,"/",RVersion))
-
 
 # Marker gene file
 Marker_file_Name <- c("NAKAMURA_METASTASIS_MODEL_M18483")
@@ -49,6 +40,9 @@ Marker_List_1 <- Marker_List[2,1]
 Marker_List_2 <- str_replace_all(Marker_List_1,"expressed: ","")
 Marker_List <- str_trim(Marker_List[2,-1], side = c("both"))
 Marker_List <- c(Marker_List_2,Marker_List)
+
+############# Read file settings #############
+
 
 ######################################## Gene list of interest ########################################
 Main = c("TOP2A")
@@ -61,6 +55,19 @@ DREAM_complex= c("RBL2","E2F4","E2F5","TFDP1","TFDP2")
 Regulators= c("TP53","YBX1","E2F1")
 #######################################################################################################
 
+
+
+
+library(SummarizedExperiment)
+library(Seurat)
+# https://satijalab.org/seurat/install.html # https://rdrr.io/rforge/matrixStats/man/matrixStats-package.html
+# https://blog.csdn.net/zengwanqin/article/details/114895417
+# https://www.youtube.com/watch?v=Eucn_BJ8EJI
+
+library(SeuratDisk)
+# https://github.com/mojaveazure/seurat-disk
+# library(cellexalvrR)
+# # https://cellexalvr.med.lu.se/cellexalvrr-vignette
 
 ####20210108 https://github.com/satijalab/seurat/issues/3414
 library(SeuratDisk)
@@ -438,7 +445,7 @@ marker_test_res_DucT2 <- top_markers(cds_subset_K100, group_cells_by="cluster",
 top_specific_markers_DucT2 <- marker_test_res_DucT2 %>%
   filter(fraction_expressing >= 0.10) %>%
   group_by(cell_group) %>%
-  top_n(10, pseudo_R2)
+  top_n(100, pseudo_R2)
 
 top_specific_marker_ids_DucT2  <- unique(top_specific_markers_DucT2  %>% pull(gene_id))
 
@@ -463,6 +470,31 @@ top_specific_markers_DucT2_Sub9 <- top_specific_markers_DucT2[top_specific_marke
 top_specific_markers_DucT2_Sub10 <- top_specific_markers_DucT2[top_specific_markers_DucT2$cell_group =="10",]
 top_specific_markers_DucT2_Sub11 <- top_specific_markers_DucT2[top_specific_markers_DucT2$cell_group =="11",]
 top_specific_markers_DucT2_Sub12 <- top_specific_markers_DucT2[top_specific_markers_DucT2$cell_group =="12",]
+
+marker_test_res_DucT2_Sub1 <- marker_test_res_DucT2[marker_test_res_DucT2$cell_group =="1",]
+marker_test_res_DucT2_Sub2 <- marker_test_res_DucT2[marker_test_res_DucT2$cell_group =="2",]
+
+
+#
+assigned_DucT2_marker_test_res <- top_markers(cds_subset_K100,
+                                             group_cells_by="cluster",
+                                            # reference_cells=1000,
+                                             cores=8)
+
+# Require that markers have at least JS specificty score > 0.5 and
+# be significant in the logistic test for identifying their cell type:
+garnett_markers_DucT2 <- assigned_DucT2_marker_test_res %>%
+  filter(marker_test_q_value < 0.01 & specificity >= 0.1) %>%
+  group_by(cell_group) %>%
+  top_n(100, marker_score)
+# # Exclude genes that are good markers for more than one cell type:
+# garnett_markers_DucT2 <- garnett_markers_DucT2 %>% 
+#   group_by(gene_short_name) %>%
+#   filter(n() == 2)
+generate_garnett_marker_file(garnett_markers_DucT2,max_genes_per_group = 100, file="./DucT2_marker_file2.txt")
+
+
+
 ########################  DucT2_TOP2ACenter ##########################
 cds_sub_DucT2_TOP2ACenter <- choose_cells(cds_subset_K100)
 plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE)
@@ -994,3 +1026,16 @@ colnames(agg_mat) <- stringr::str_c("Partition ", colnames(agg_mat))
 pheatmap::pheatmap(agg_mat, cluster_rows=TRUE, cluster_cols=TRUE,
                    scale="column", clustering_method="ward.D2",
                    fontsize=6)
+
+
+
+############ Working with 3D trajectories ############
+cds_3d <- reduce_dimension(cds, max_components = 3)
+cds_3d <- cluster_cells(cds_3d)
+cds_3d <- learn_graph(cds_3d)
+cds_3d <- order_cells(cds_3d, root_pr_nodes=get_earliest_principal_node(cds))
+
+cds_3d_plot_obj <- plot_cells_3d(cds_3d, color_cells_by="partition")
+
+
+
