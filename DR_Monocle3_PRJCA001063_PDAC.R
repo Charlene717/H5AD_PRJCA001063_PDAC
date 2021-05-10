@@ -28,7 +28,7 @@ library(cicero)
 ############# Read file settings #############
 
 PathName = setwd(getwd())
-RVersion = "20210427V1"
+RVersion = "20210501V1"
 dir.create(paste0(PathName,"/",RVersion))
 
 # Marker gene file
@@ -55,7 +55,7 @@ DREAM_complex= c("RBL2","E2F4","E2F5","TFDP1","TFDP2")
 Regulators= c("TP53","YBX1","E2F1")
 #######################################################################################################
 
-
+# https://rdrr.io/github/satijalab/seurat/man/AddModuleScore.html
 
 
 library(SummarizedExperiment)
@@ -266,6 +266,7 @@ RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 2,y.max = 100)
 
 #cell_cycle <- marrow@active.ident
 cds@colData@listData$cell_cycle <- marrow@active.ident
+#cds@colData@listData$cell_cycle <- marrow@meta.data[["Phase"]]
 #TTT <- marrow@active.ident
 
 ##
