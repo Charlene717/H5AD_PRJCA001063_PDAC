@@ -68,6 +68,10 @@ GeneNAFMT <- c("HuGSymbol") # Gene names format of data: HuGSymbol,MouGSymbol,Hu
 ## Cluster cells setting
 k_cds_sub_DucT2 <- c(100) # k for ductal cell type2
 
+## Threshold of PCA scores
+PCAThreshold_Pos <- 0.03
+PCAThreshold_Neg <- -0.03
+
 ##################  Grab specific terms ################## 
 ## grepl Stroma
 Stroma_cds <- cds[,grepl("Stromal", colData(cds)$Broad.cell.type, ignore.case=TRUE)]
@@ -380,7 +384,7 @@ plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c(Main), label_cell_groups=FALSE, sh
 marrow_sub_DucT2_TOP2ACenter <- Monocle3_To_Seurat(cds_sub_DucT2_TOP2ACenter,"sub_DT2TOP2ACTR") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
 
 ###### Assign Cell-Cycle Scores ######
-#getFilePath("Cell-Cycle Scoring and Regression.R")
+# getFilePath("Cell-Cycle Scoring and Regression.R")
 marrow_sub_DucT2_TOP2ACenter <- CCScorReg(GeneNAFMT,marrow_sub_DucT2_TOP2ACenter) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
 # view cell cycle scores and phase assignments
 head(marrow_sub_DucT2_TOP2ACenter[[]])
@@ -436,54 +440,25 @@ plot_genes_in_pseudotime(MainGroup_lineage_sub_DT2TOP2ACTR,
 ########################  DucT2_TOP2ACenter trajectories ##########################
 cds_sub_DucT2_TOP2ACenter_T1 <- choose_graph_segments(cds_sub_DucT2 ,clear_cds = FALSE)
 
-plot_cells(cds_sub_DucT2_TOP2ACenter_T1, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE) + scale_color_manual(values = colorsT)
+plot_cells(cds_sub_DucT2_TOP2ACenter_T1, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
+
+###### Convert Monocle3 Object to Seurat Object ######
+# getFilePath("Monocle3_To_Seurat.R")
+marrow_sub_DucT2_TOP2ACenter_T1 <- Monocle3_To_Seurat(cds_sub_DucT2_TOP2ACenter_T1,"sub_DT2TOP2ACTR_T1") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
+
+###### Assign Cell-Cycle Scores ######
+# getFilePath("Cell-Cycle Scoring and Regression.R")
+marrow_sub_DucT2_TOP2ACenter_T1 <- CCScorReg(GeneNAFMT,marrow_sub_DucT2_TOP2ACenter_T1) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
+
+###### PCA Scores for finding significantly different genes at the endpoints ######
+getFilePath("PCA_Threshold.R")
+
+PCA_DT2TOP2ACTR_T1 <- marrow_sub_DucT2_TOP2ACenter_T1@reductions[["pca"]]@feature.loadings
+PCA_DT2TOP2ACTR_T1_PC_Sum <- PCA_Threshold_Pos(PCA_DT2TOP2ACTR_T1,1,PCAThreshold_Pos)
+PCA_DT2TOP2ACTR_T1_NC_Sum <- PCA_Threshold_Neg(PCA_DT2TOP2ACTR_T1,1,PCAThreshold_Neg)
 
 
-CCdata_sub_DucT2_TOP2ACenter_T1 <- cds_sub_DucT2_TOP2ACenter_T1@assays@data@listData$counts
-colnames(CCdata_sub_DucT2_TOP2ACenter_T1) = cds_sub_DucT2_TOP2ACenter_T1@assays@data@listData[["counts"]]@Dimnames[[2]]
-rownames(CCdata_sub_DucT2_TOP2ACenter_T1) = cds_sub_DucT2_TOP2ACenter_T1@assays@data@listData[["counts"]]@Dimnames[[1]]
 
-
-DataCellcycle_sub_DucT2_TOP2ACenter_T1 <- CCdata_sub_DucT2_TOP2ACenter_T1
-DataCellcycle_sub_DucT2_TOP2ACenter_T1 <- as(as.matrix(DataCellcycle_sub_DucT2_TOP2ACenter_T1), "dgCMatrix")
-
-marrow_sub_DucT2_TOP2ACenter_T1 <- CreateSeuratObject(counts = DataCellcycle_sub_DucT2_TOP2ACenter_T1)
-marrow_sub_DucT2_TOP2ACenter_T1 <- NormalizeData(marrow_sub_DucT2_TOP2ACenter_T1)
-marrow_sub_DucT2_TOP2ACenter_T1 <- FindVariableFeatures(marrow_sub_DucT2_TOP2ACenter_T1, selection.method = "vst")
-marrow_sub_DucT2_TOP2ACenter_T1 <- ScaleData(marrow_sub_DucT2_TOP2ACenter_T1, features = rownames(marrow_sub_DucT2_TOP2ACenter_T1))
-#錯誤: 無法配置大小為 3.9 Gb 的向量
-#https://d.cosx.org/d/413001-413001
-#memory.limit(15000)
-
-
-marrow_sub_DucT2_TOP2ACenter_T1 <- RunPCA(marrow_sub_DucT2_TOP2ACenter_T1, features = VariableFeatures(marrow_sub_DucT2_TOP2ACenter_T1), ndims.print = 1:10, nfeatures.print = 25)
-# marrow_sub_DucT2_TOP2ACenter_T1@assays[["RNA"]]@counts@Dimnames[[1]] <- cds_sub_DucT2_TOP2ACenter_T1@assays@data@listData[["counts"]]@Dimnames[[1]]
-# marrow_sub_DucT2_TOP2ACenter_T1@assays[["RNA"]]@data@Dimnames[[1]] <- cds_sub_DucT2_TOP2ACenter_T1@assays@data@listData[["counts"]]@Dimnames[[1]]
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T1_DimHeatmap1.png")) # 設定輸出圖檔
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(1,2),nfeatures = 30)
-dev.off() # 關閉輸出圖檔
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T1_DimHeatmap2.png")) # 設定輸出圖檔
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(3,4),nfeatures = 30)
-dev.off() # 關閉輸出圖檔
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T1_DimHeatmap3.png")) # 設定輸出圖檔
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(5,6),nfeatures = 30)
-dev.off() # 關閉輸出圖檔
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T1_DimHeatmap4.png")) # 設定輸出圖檔
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(7,8),nfeatures = 30)
-dev.off() # 關閉輸出圖檔
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T1_DimHeatmap5.png")) # 設定輸出圖檔
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(9,10),nfeatures = 30)
-dev.off() # 關閉輸出圖檔
-
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(1:2),nfeatures = 50)
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DucT2_TOP2ACenter_T1_DimHeatmapMa.png")) # 設定輸出圖檔
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter_T1, dims = c(1:18))
-dev.off() # 關閉輸出圖檔
 
 
 
