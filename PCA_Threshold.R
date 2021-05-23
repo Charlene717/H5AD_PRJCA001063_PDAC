@@ -6,16 +6,16 @@
 #   return(OUTPUT)
 # }
 
-GThreshold_Pos <- 0.03
-GThreshold_Neg <- -0.03
+# PCAThreshold_Pos <- 0.03
+# PCAThreshold_Neg <- -0.03
 
-PCA_Threshold_Pos <- function(PCA_F_T3,TN){
+PCA_Threshold_Pos <- function(PCA_F_T3,TN,PCAThreshold_Pos){
 
 PCA_F_T3_PC_SUM <- list()
 for(i in 1:50){
   LIstPC <- as.data.frame(PCA_F_T3[,i])
   LIstPC <-cbind(row.names(LIstPC),LIstPC)
-  LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2] >= GThreshold_Pos,])
+  LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2] >= PCAThreshold_Pos,])
   colnames(LIstPC2) <- c("gene",paste0("PCA_P_T",TN,"_PC",i))
   #  assign(paste0("PCA_F_T3_PC",i),as.data.frame(PCA_F_T3[,i])) 
   #Error  assign(paste0("PCA_F_T3_PC",i),PCA_F_T3[,PCA_F_T3[,i]>=0.09]) 
@@ -46,8 +46,15 @@ for(i in 1:length(PCA_F_T3_PC_SUM)){
   
 }
 
+PCA_F_T3_Gene <- row.names(PCA_F_T3)
+PCA_F_T3_New <- cbind(PCA_F_T3_Gene,PCA_F_T3)
+colnames(PCA_F_T3_New)[1] <-  paste0("PCA_P_T",TN)
+
 # Write
-out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_PT",GThreshold_Pos,".txt")
+out_file1 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_PT",".txt")
+write.table(PCA_F_T3_New,file = out_file1,sep = "\t", quote = F, row.names = F, col.names = T)
+
+out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_PT",PCAThreshold_Pos,".txt")
 write.table(PCA_F_T3_PC_SUM2,file = out_file2, quote = F, row.names = F, col.names = F)
 
 PCA_Threshold_Output <- PCA_F_T3_PC_SUM
@@ -60,40 +67,40 @@ return(PCA_Threshold_Output)
 #########################################################################################
 
 PCA_P_T1 <- marrow_sub_DucT2_TOP2ACenter_T1@reductions[["pca"]]@feature.loadings
-PCA_P_T1_PC_Sum <- PCA_Threshold_Pos(PCA_P_T1,1)
+PCA_P_T1_PC_Sum <- PCA_Threshold_Pos(PCA_P_T1,1,PCAThreshold_Pos)
 
 PCA_P_T2 <- marrow_sub_DucT2_TOP2ACenter_T2@reductions[["pca"]]@feature.loadings
-PCA_P_T2_PC_Sum <- PCA_Threshold_Pos(PCA_P_T2,2)
+PCA_P_T2_PC_Sum <- PCA_Threshold_Pos(PCA_P_T2,2,PCAThreshold_Pos)
 
 PCA_P_T3 <- marrow_sub_DucT2_TOP2ACenter_T3@reductions[["pca"]]@feature.loadings
-PCA_P_T3_PC_Sum <- PCA_Threshold_Pos(PCA_P_T3,3)
+PCA_P_T3_PC_Sum <- PCA_Threshold_Pos(PCA_P_T3,3,PCAThreshold_Pos)
 
 PCA_P_T4 <- marrow_sub_DucT2_TOP2ACenter_T4@reductions[["pca"]]@feature.loadings
-PCA_P_T4_PC_Sum <- PCA_Threshold_Pos(PCA_P_T4,4)
+PCA_P_T4_PC_Sum <- PCA_Threshold_Pos(PCA_P_T4,4,PCAThreshold_Pos)
 
 PCA_P_T5 <- marrow_sub_DucT2_TOP2ACenter_T5@reductions[["pca"]]@feature.loadings
-PCA_P_T5_PC_Sum <- PCA_Threshold_Pos(PCA_P_T5,5)
+PCA_P_T5_PC_Sum <- PCA_Threshold_Pos(PCA_P_T5,5,PCAThreshold_Pos)
 
 PCA_P_T6 <- marrow_sub_DucT2_TOP2ACenter_T6@reductions[["pca"]]@feature.loadings
-PCA_P_T6_PC_Sum <- PCA_Threshold_Pos(PCA_P_T6,6)
+PCA_P_T6_PC_Sum <- PCA_Threshold_Pos(PCA_P_T6,6,PCAThreshold_Pos)
 
 PCA_P_T7 <- marrow_sub_DucT2_TOP2ACenter_T7@reductions[["pca"]]@feature.loadings
-PCA_P_T7_PC_Sum <- PCA_Threshold_Pos(PCA_P_T7,7)
+PCA_P_T7_PC_Sum <- PCA_Threshold_Pos(PCA_P_T7,7,PCAThreshold_Pos)
 
 PCA_P_T8 <- marrow_sub_DucT2_TOP2ACenter_T8@reductions[["pca"]]@feature.loadings
-PCA_P_T8_PC_Sum <- PCA_Threshold_Pos(PCA_P_T8,8)
+PCA_P_T8_PC_Sum <- PCA_Threshold_Pos(PCA_P_T8,8,PCAThreshold_Pos)
 
 #########################################################################################
 
 
 
-PCA_Threshold_Neg <- function(PCA_F_T3,TN){
+PCA_Threshold_Neg <- function(PCA_F_T3,TN,PCAThreshold_Neg){
   
   PCA_F_T3_PC_SUM <- list()
   for(i in 1:50){
     LIstPC <- as.data.frame(PCA_F_T3[,i])
     LIstPC <-cbind(row.names(LIstPC),LIstPC)
-    LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2] <= GThreshold_Neg,])
+    LIstPC2 <-   as.data.frame(LIstPC[LIstPC[,2] <= PCAThreshold_Neg,])
     colnames(LIstPC2) <- c("gene",paste0("PCA_N_T",TN,"_PC",i))
     #  assign(paste0("PCA_F_T3_PC",i),as.data.frame(PCA_F_T3[,i])) 
     #Error  assign(paste0("PCA_F_T3_PC",i),PCA_F_T3[,PCA_F_T3[,i]>=0.09]) 
@@ -124,8 +131,15 @@ PCA_Threshold_Neg <- function(PCA_F_T3,TN){
     
   }
   
+  PCA_F_T3_Gene <- row.names(PCA_F_T3)
+  PCA_F_T3_New <- cbind(PCA_F_T3_Gene,PCA_F_T3)
+  colnames(PCA_F_T3_New)[1] <-  paste0("PCA_N_T",TN)
+  
   # Write
-  out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_NT",GThreshold_Neg,".txt")
+  out_file1 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_NT",".txt")
+  write.table(PCA_F_T3_New,file = out_file1,sep = "\t", quote = F, row.names = F, col.names = T)
+
+    out_file2 <- paste0(PathName,"/",RVersion,"/",RVersion,"_","PRJCA001063_DucT2_TOP2ACenter_PCA_T",TN,"_NT",PCAThreshold_Neg,".txt")
   write.table(PCA_F_T3_PC_SUM2,file = out_file2, quote = F, row.names = F, col.names = F)
   
   PCA_Threshold_Output <- PCA_F_T3_PC_SUM
@@ -135,36 +149,32 @@ PCA_Threshold_Neg <- function(PCA_F_T3,TN){
 }
 
 
-########
-PCA_P_T4_NC_Sum <- PCA_Threshold_Neg(PCA_P_T4,4)
-
-
 
 #########################################################################################
 
 PCA_P_T1 <- marrow_sub_DucT2_TOP2ACenter_T1@reductions[["pca"]]@feature.loadings
-PCA_P_T1_NC_Sum <- PCA_Threshold_Neg(PCA_P_T1,1)
+PCA_P_T1_NC_Sum <- PCA_Threshold_Neg(PCA_P_T1,1,PCAThreshold_Neg)
 
 PCA_P_T2 <- marrow_sub_DucT2_TOP2ACenter_T2@reductions[["pca"]]@feature.loadings
-PCA_P_T2_NC_Sum <- PCA_Threshold_Neg(PCA_P_T2,2)
+PCA_P_T2_NC_Sum <- PCA_Threshold_Neg(PCA_P_T2,2,PCAThreshold_Neg)
 
 PCA_P_T3 <- marrow_sub_DucT2_TOP2ACenter_T3@reductions[["pca"]]@feature.loadings
-PCA_P_T3_NC_Sum <- PCA_Threshold_Neg(PCA_P_T3,3)
+PCA_P_T3_NC_Sum <- PCA_Threshold_Neg(PCA_P_T3,3,PCAThreshold_Neg)
 
 PCA_P_T4 <- marrow_sub_DucT2_TOP2ACenter_T4@reductions[["pca"]]@feature.loadings
-PCA_P_T4_NC_Sum <- PCA_Threshold_Neg(PCA_P_T4,4)
+PCA_P_T4_NC_Sum <- PCA_Threshold_Neg(PCA_P_T4,4,PCAThreshold_Neg)
 
 PCA_P_T5 <- marrow_sub_DucT2_TOP2ACenter_T5@reductions[["pca"]]@feature.loadings
-PCA_P_T5_NC_Sum <- PCA_Threshold_Neg(PCA_P_T5,5)
+PCA_P_T5_NC_Sum <- PCA_Threshold_Neg(PCA_P_T5,5,PCAThreshold_Neg)
 
 PCA_P_T6 <- marrow_sub_DucT2_TOP2ACenter_T6@reductions[["pca"]]@feature.loadings
-PCA_P_T6_NC_Sum <- PCA_Threshold_Neg(PCA_P_T6,6)
+PCA_P_T6_NC_Sum <- PCA_Threshold_Neg(PCA_P_T6,6,PCAThreshold_Neg)
 
 PCA_P_T7 <- marrow_sub_DucT2_TOP2ACenter_T7@reductions[["pca"]]@feature.loadings
-PCA_P_T7_NC_Sum <- PCA_Threshold_Neg(PCA_P_T7,7)
+PCA_P_T7_NC_Sum <- PCA_Threshold_Neg(PCA_P_T7,7,PCAThreshold_Neg)
 
 PCA_P_T8 <- marrow_sub_DucT2_TOP2ACenter_T8@reductions[["pca"]]@feature.loadings
-PCA_P_T8_NC_Sum <- PCA_Threshold_Neg(PCA_P_T8,8)
+PCA_P_T8_NC_Sum <- PCA_Threshold_Neg(PCA_P_T8,8,PCAThreshold_Neg)
 
 #########################################################################################
 
