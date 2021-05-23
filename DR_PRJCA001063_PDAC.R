@@ -185,7 +185,7 @@ marrow <- Monocle3_To_Seurat(cds,"cds") #³o­Ófunction¦s¦b©óMonocle3_To_Seurat.R¸
 
 ###### Assign Cell-Cycle Scores ######
 getFilePath("Cell-Cycle Scoring and Regression.R")
-marrow <- CCScorReg(GeneNAFMT,marrow,colors_cc,Main) #³o­Ófunction¦s¦b©óCell-Cycle Scoring and Regression.R¸Ì­±
+marrow <- CCScorReg(GeneNAFMT,marrow) #³o­Ófunction¦s¦b©óCell-Cycle Scoring and Regression.R¸Ì­±
 
 RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 1)
 RidgePlot(marrow,cols = colors_cc, features = c(Main_Group), ncol = 2,log=TRUE) 
@@ -196,7 +196,32 @@ RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 1)
 dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
 ###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
-cds <- CCToCDS(cds,marrow,colors_cc,Main) #³o­Ófunction¦s¦b©óMonocle3_To_Seurat.R¸Ì­±
+cds@colData@listData$cell_cycle <- marrow@active.ident
+# cds@colData@listData$cell_cycle <- marrow@meta.data[["Phase"]]
+
+plot_cells(cds, color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
+
+## Plot the violin diagram
+Maingroup_ciliated_genes <- c(Main_Group)
+cds_marrow_cc <- cds[rowData(cds)$gene_short_name %in% Maingroup_ciliated_genes,]
+
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
+  geom_boxplot(width=0.1, fill="white")
+
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CC_Violin_Main.png")) # ³]©w¿é¥X¹ÏÀÉ
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ 
+  scale_fill_manual(values = colors_cc)+
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
+
+pdf(paste0(PathName,"/",RVersion,"/",RVersion,"_","CC_Violin_Main.pdf")) # ³]©w¿é¥X¹ÏÀÉ
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ 
+  scale_fill_manual(values = colors_cc)+
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
+
 
 
 
@@ -259,16 +284,11 @@ plot_cells(cds,
            label_branch_points=FALSE,
            graph_label_size=1.5)
 
+MainGroup_lineage_cds <- cds[rowData(cds)$gene_short_name %in% Main_Group]
 
-AFD_genes <- c("TOP2A","TOP2B", "MUC1", "BRIP1","KRAS")
-
-AFD_lineage_cds <- cds[rowData(cds)$gene_short_name %in% AFD_genes]
-
-plot_genes_in_pseudotime(AFD_lineage_cds,
+plot_genes_in_pseudotime(MainGroup_lineage_cds,
                          color_cells_by="cell_cycle",cell_size=2,
-                         min_expr=0.5)
-
-
+                         min_expr=0.5)+ scale_color_manual(values = colors_cc)
 
 
 ######################################  cds_subset ########################################
@@ -351,88 +371,64 @@ generate_garnett_marker_file(garnett_markers_DucT2,max_genes_per_group = 100, fi
 cds_sub_DucT2_TOP2ACenter <- choose_cells(cds_subset_NewK)
 plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE)
 plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE, show_trajectory_graph = FALSE, cell_size = 2)
-plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE, show_trajectory_graph = FALSE, cell_size = 2, color_cells_by="cell_cycle")+ scale_color_manual(values = colorsT)
+plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE, show_trajectory_graph = FALSE, cell_size = 2, color_cells_by="cell_cycle")+ scale_color_manual(values = colors_cc)
 plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c(Main), label_cell_groups=FALSE, show_trajectory_graph = FALSE, cell_size = 2)
-#plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c(Main),cell_size=1,label_cell_groups = FALSE, show_trajectory_graph = FALSE)
-
-CCdata_sub_DucT2_TOP2ACenter <- cds_sub_DucT2_TOP2ACenter@assays@data@listData$counts
-colnames(CCdata_sub_DucT2_TOP2ACenter) = cds_sub_DucT2_TOP2ACenter@assays@data@listData[["counts"]]@Dimnames[[2]]
-rownames(CCdata_sub_DucT2_TOP2ACenter) = cds_sub_DucT2_TOP2ACenter@assays@data@listData[["counts"]]@Dimnames[[1]]
 
 
-DataCellcycle_sub_DucT2_TOP2ACenter <- CCdata_sub_DucT2_TOP2ACenter
-DataCellcycle_sub_DucT2_TOP2ACenter <- as(as.matrix(DataCellcycle_sub_DucT2_TOP2ACenter), "dgCMatrix")
+###### Convert Monocle3 Object to Seurat Object ######
+# getFilePath("Monocle3_To_Seurat.R")
+marrow_sub_DucT2_TOP2ACenter <- Monocle3_To_Seurat(cds_sub_DucT2_TOP2ACenter,"sub_DT2TOP2ACTR") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
 
-marrow_sub_DucT2_TOP2ACenter <- CreateSeuratObject(counts = DataCellcycle_sub_DucT2_TOP2ACenter)
-marrow_sub_DucT2_TOP2ACenter <- NormalizeData(marrow_sub_DucT2_TOP2ACenter)
-marrow_sub_DucT2_TOP2ACenter <- FindVariableFeatures(marrow_sub_DucT2_TOP2ACenter, selection.method = "vst")
-marrow_sub_DucT2_TOP2ACenter <- ScaleData(marrow_sub_DucT2_TOP2ACenter, features = rownames(marrow_sub_DucT2_TOP2ACenter))
-
-
-marrow_sub_DucT2_TOP2ACenter <- RunPCA(marrow_sub_DucT2_TOP2ACenter, features = VariableFeatures(marrow_sub_DucT2_TOP2ACenter), ndims.print = 6:10, nfeatures.print = 10)
-marrow_sub_DucT2_TOP2ACenter@assays[["RNA"]]@counts@Dimnames[[1]] <- cds_sub_DucT2_TOP2ACenter@assays@data@listData[["counts"]]@Dimnames[[1]]
-marrow_sub_DucT2_TOP2ACenter@assays[["RNA"]]@data@Dimnames[[1]] <- cds_sub_DucT2_TOP2ACenter@assays@data@listData[["counts"]]@Dimnames[[1]]
-
-#png(paste0(PathName,"/",RVersion,"/",RVersion,"_","DucT2_TOP2ACenter_CcDimHeatmap.png")) # ³]©w¿é¥X¹ÏÀÉ
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter, dims = c(3, 4))
-#dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
-
-#png(paste0(PathName,"/",RVersion,"/",RVersion,"_","DucT2_TOP2ACenter_CcDimHeatmap2.png")) # ³]©w¿é¥X¹ÏÀÉ
-DimHeatmap(marrow_sub_DucT2_TOP2ACenter, dims = c(1, 2))
-#dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
-
-## Assign Cell-Cycle Scores
-marrow_sub_DucT2_TOP2ACenter <- CellCycleScoring(marrow_sub_DucT2_TOP2ACenter, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-
+###### Assign Cell-Cycle Scores ######
+#getFilePath("Cell-Cycle Scoring and Regression.R")
+marrow_sub_DucT2_TOP2ACenter <- CCScorReg(GeneNAFMT,marrow_sub_DucT2_TOP2ACenter) #³o­Ófunction¦s¦b©óCell-Cycle Scoring and Regression.R¸Ì­±
 # view cell cycle scores and phase assignments
 head(marrow_sub_DucT2_TOP2ACenter[[]])
 
-
 ## Plot the RidgePlot
-RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colorsT, features = c("TOP2A"), ncol = 1)
-RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colorsT, features = c(Main), ncol = 2,log=TRUE)
-RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colorsT, features = c(Main), ncol = 2,y.max = 100)
+RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colors_cc, features = c(Main), ncol = 1)
+RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colors_cc, features = c(Main_Group), ncol = 2,log=TRUE) 
+RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colors_cc, features = c(Main_Group), ncol = 2,y.max = 100) 
 
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_RidgePlot_Sub_DucT2_TOP2ACenter_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_RidgePlot_sub_DT2TOP2ACTR_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
 RidgePlot(marrow_sub_DucT2_TOP2ACenter,cols = colorsT, features = c(Main), ncol = 1)
 dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
 
-## ±NSeurat¶]¥XªºCell cycleµ²ªG¼g¤JMonocle3ªºcdsÀÉ
+###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
 cds_sub_DucT2_TOP2ACenter@colData@listData$cell_cycle <- marrow_sub_DucT2_TOP2ACenter@active.ident
 
+plot_cells(cds_sub_DucT2_TOP2ACenter, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colors_cc)
+plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+
 ## Plot the Violin Plot 
-Maingroup_ciliated_genes <- c("TOP2A")
-cds_sub_DucT2_TOP2ACenter <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Maingroup_ciliated_genes,]
-plot_genes_violin(cds_sub_DucT2_TOP2ACenter, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
+cds_sub_DT2TOP2ACTR_Maingroup <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main_Group,]
+plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
+                  scale_fill_manual(values = colors_cc) + 
+                  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main_Sub_DucT2_TOP2ACenter_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
-plot_genes_violin(cds_sub_DucT2_TOP2ACenter, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main_sub_DT2TOP2ACTR_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
+plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
+  scale_fill_manual(values = colors_cc) + 
   theme(axis.text.x=element_text(angle=45, hjust=1))
 dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
 ##
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_CellCycle_Sub_DucT2_TOP2ACenter_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
-plot_cells(cds_sub_DucT2_TOP2ACenter, color_cells_by="cell_cycle",cell_size=3, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colorsT)
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_CellCycle_sub_DT2TOP2ACTR_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
+plot_cells(cds_sub_DucT2_TOP2ACenter, color_cells_by="cell_cycle",cell_size=3, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colors_cc)
 dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_Sub_DucT2_TOP2ACenter_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
-plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c("TOP2A"),cell_size=3, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Main,"_sub_DT2TOP2ACTR_V2.png")) # ³]©w¿é¥X¹ÏÀÉ
+plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c(Main),cell_size=3, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
 dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
 
-plot_cells(cds_sub_DucT2_TOP2ACenter, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE) + scale_color_manual(values = colorsT)
 
-
-
-plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
-
-AFD_lineage_cds_sub_DucT2_TOP2ACenter <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main]
-plot_genes_in_pseudotime(AFD_lineage_cds_sub_DucT2_TOP2ACenter,
+MainGroup_lineage_sub_DT2TOP2ACTR <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main_Group]
+plot_genes_in_pseudotime(MainGroup_lineage_sub_DT2TOP2ACTR,
                          color_cells_by="cell_cycle",cell_size=2,
-                         min_expr=0.5)+ scale_color_manual(values = colorsT)
+                         min_expr=0.5)+ scale_color_manual(values = colors_cc)
 
 
 
