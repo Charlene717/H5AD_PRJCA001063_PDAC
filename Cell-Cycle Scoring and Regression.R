@@ -1,12 +1,9 @@
-## Cell-Cycle Scoring and Regression (for Monocle3)
 
+###### Cell-Cycle Scoring and Regression (for Monocle3) ######
 # GeneNAFMT <- c("HuGSymbol") # Gene names format  of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
 
-
-CCScorReg <- function(GeneNAFMT,marrow) {
-
-##### (Version 2) #####
-
+CCScorReg <- function(GeneNAFMT,marrow,colors_cc) {
+## (Version 2)
 ## Load package
 library(Seurat)
 library(SummarizedExperiment) 
@@ -86,10 +83,19 @@ RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 1)
 # RidgePlot(marrow, features = c(MainGroup[,1]), ncol = 2,idents=c("G1","S","G2M"),sort= 'increasing' ,same.y.lims=TRUE) 
 dev.off() # 關閉輸出圖檔
 
+return(marrow2)
+}
+
+
+
+###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
+
+CCToCDS <- function(marrow,Main,colors_cc) {
 
 ## 將Seurat跑出的Cell cycle結果寫入Monocle3的cds檔
 cds@colData@listData$cell_cycle <- marrow@active.ident
 # cds@colData@listData$cell_cycle <- marrow@meta.data[["Phase"]]
+
 plot_cells(cds  , color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colorsT)
 
 ## Plot the violin diagram
@@ -117,7 +123,7 @@ plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_sc
 dev.off() # 關閉輸出圖檔
 
 
-return(sourceObj)
+return(cds2)
 }
 
 
