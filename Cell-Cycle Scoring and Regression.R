@@ -11,7 +11,7 @@ library(monocle3)
 ###### Cell-Cycle Scoring and Regression (for Monocle3) ######
 # GeneNAFMT <- c("HuGSymbol") # Gene names format  of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
 
-CCScorReg <- function(GeneNAFMT,marrow,colors_cc,Main) {
+CCScorReg <- function(GeneNAFMT,marrow) {
 ## (Version 2)
 
 ## Cell cycle genes file
@@ -75,49 +75,6 @@ return(marrow)
 }
 
 
-
-###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
-
-CCToCDS <- function(cds,marrow,colors_cc,Main) {
-
-## 將Seurat跑出的Cell cycle結果寫入Monocle3的cds檔
-cds@colData@listData$cell_cycle <- marrow@active.ident
-# cds@colData@listData$cell_cycle <- marrow@meta.data[["Phase"]]
-
-plot_cells(cds, color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
-
-## Plot the violin diagram
-Maingroup_ciliated_genes <- c(Main)
-cds_marrow_cc <- cds[rowData(cds)$gene_short_name %in% Maingroup_ciliated_genes,]
-
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
-# Chage the color
-# http://www.sthda.com/english/wiki/ggplot2-violin-plot-quick-start-guide-r-software-and-data-visualization
-
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-  geom_boxplot(width=0.1, fill="white")
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main.png")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_cct, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
-dev.off() # 關閉輸出圖檔
-
-pdf(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main.pdf")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
-dev.off() # 關閉輸出圖檔
-
-##
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_CellCycle.png")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
-dev.off() # 關閉輸出圖檔
-
-
-return(cds)
-}
 
 
 
