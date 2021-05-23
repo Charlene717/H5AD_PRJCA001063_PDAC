@@ -179,131 +179,24 @@ library(org.Mm.eg.db)
 library('org.Hs.eg.db')
 library(Hmisc)
 
-## Convert Monocle3 Object to Seurat Object
-CCdata <- cds@assays@data@listData$counts
-colnames(CCdata) = cds@assays@data@listData[["counts"]]@Dimnames[[2]]
-rownames(CCdata) = cds@assays@data@listData[["counts"]]@Dimnames[[1]]
-
-DataCellcycle <- CCdata
-DataCellcycle <- as(as.matrix(DataCellcycle), "dgCMatrix")
-
-marrow <- CreateSeuratObject(counts = DataCellcycle)
-marrow <- NormalizeData(marrow)
-marrow <- FindVariableFeatures(marrow, selection.method = "vst")
-marrow <- ScaleData(marrow, features = rownames(marrow))
-
-marrow@assays[["RNA"]]@counts@Dimnames[[1]] <- cds@assays@data@listData[["counts"]]@Dimnames[[1]]
-marrow@assays[["RNA"]]@data@Dimnames[[1]] <- cds@assays@data@listData[["counts"]]@Dimnames[[1]]
-marrow@commands[["ScaleData.RNA"]]@params[["features"]] <- cds@assays@data@listData[["counts"]]@Dimnames[[1]]
-
-## Run PCA
-marrow <- RunPCA(marrow, features = VariableFeatures(marrow), ndims.print = 1:10, nfeatures.print = 10)
-DimHeatmap(marrow, dims = c(1, 2))
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DimHeatmap1to10.png")) # 設定輸出圖檔
-DimHeatmap(marrow, dims = c(1: 10))
-dev.off() # 關閉輸出圖檔
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_DimHeatmap1&2.png")) # 設定輸出圖檔
-DimHeatmap(marrow, dims = c(1, 2))
-dev.off() # 關閉輸出圖檔
+###### Convert Monocle3 Object to Seurat Object ######
+getFilePath("Monocle3_To_Seurat.R")
+marrow <- Monocle3_To_Seurat(cds,"cds") #這個function存在於Monocle3_To_Seurat.R裡面
 
 ###### Assign Cell-Cycle Scores ######
-cc.genes <- cc.genes_list # cc: Cell-Cycle
+getFilePath("Cell-Cycle Scoring and Regression.R")
+marrow <- CCScorReg(GeneNAFMT,marrow,colors_cc,Main) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
 
-## Segregate "cc.genes_list" into markers of G2/M phase and markers of S phase
-s.genes <- cc.genes[1:43,]
-g2m.genes <- cc.genes[44:97,]
-
-# For Human gene symbol # HuGSymbol
-s.genes1 <- as.character(s.genes)
-g2m.genes1 <- as.character(g2m.genes)
-
-# For Mouse gene symbol # MouGSymbol
-s.genes2 <- capitalize(tolower(s.genes))
-g2m.genes2 <- capitalize(tolower(g2m.genes))
-
-library(tidyverse)
-# For Human ENSEMBL # HuENSEMBL
-s.genes3_0 <- AnnotationDbi::select(org.Hs.eg.db, keys=s.genes1, columns='ENSEMBL', keytype='SYMBOL')
-s.genes3_1 = s.genes3_0[!duplicated(s.genes3_0[2]),]
-s.genes3_2 <- na.omit(s.genes3_1[2])
-s.genes3 <- s.genes3_2[,1]
-
-g2m.genes3_0 <- AnnotationDbi::select(org.Hs.eg.db, keys=g2m.genes1, columns='ENSEMBL', keytype='SYMBOL')
-g2m.genes3_1 = g2m.genes3_0[!duplicated(g2m.genes3_0[2]),]
-g2m.genes3_2 <- na.omit(g2m.genes3_1[2])
-g2m.genes3 <- g2m.genes3_2[,1]
-
-
-# For Mouse ENSEMBL # MouENSEMBL
-s.genes4_0 <- AnnotationDbi::select(org.Mm.eg.db, keys=s.genes2, columns='ENSEMBL', keytype='SYMBOL')
-s.genes4_1 = s.genes4_0[!duplicated(s.genes4_0[2]),]
-s.genes4_2 <- na.omit(s.genes4_1[2])
-s.genes4 <- s.genes4_2[,1]
-
-g2m.genes4_0 <- AnnotationDbi::select(org.Mm.eg.db, keys=g2m.genes2, columns='ENSEMBL', keytype='SYMBOL')
-g2m.genes4_1 = g2m.genes4_0[!duplicated(g2m.genes4_0[2]),]
-g2m.genes4_2 <- na.omit(g2m.genes4_1[2])
-g2m.genes4 <- g2m.genes4_2[,1]
-
-## Assign Cell-Cycle Scores
-if (GeneNAFMT=="HuGSymbol") {
-  marrow <- CellCycleScoring(marrow, s.features = s.genes1, g2m.features = g2m.genes1, set.ident = TRUE)
-} else if (GeneNAFMT=="MouGSymbol") {
-  marrow <- CellCycleScoring(marrow, s.features = s.genes2, g2m.features = g2m.genes2, set.ident = TRUE)
-} else if (GeneNAFMT=="HuENSEMBL") {
-  marrow <- CellCycleScoring(marrow, s.features = s.genes3, g2m.features = g2m.genes3, set.ident = TRUE)
-} else if (GeneNAFMT=="MouENSEMBL") {
-  marrow <- CellCycleScoring(marrow, s.features = s.genes4, g2m.features = g2m.genes4, set.ident = TRUE)
-} else {
-  c("Wrong input from GeneNAFMT!")
-}
-# view cell cycle scores and phase assignments
-head(marrow[[]])
-
-## Plot the RidgePlot
 RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 1)
-# https://datavizpyr.com/ridgeline-plot-with-ggridges-in-r/
-# https://www.r-graph-gallery.com/294-basic-ridgeline-plot.html
-RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 2,log=TRUE) 
-RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 2,y.max = 100) 
+RidgePlot(marrow,cols = colors_cc, features = c(Main_Group), ncol = 2,log=TRUE) 
+RidgePlot(marrow,cols = colors_cc, features = c(Main_Group), ncol = 2,y.max = 100) 
 
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_RidgePlot_Main.png")) # 設定輸出圖檔
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","cds_CC_RidgePlot_Main.png")) # 設定輸出圖檔
 RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 1) 
-# RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 2,idents=c("G1","S","G2M")) 
-# RidgePlot(marrow, features = c(MainGroup[,1]), ncol = 2,idents=c("G1","S","G2M"),sort= 'increasing' ,same.y.lims=TRUE) 
 dev.off() # 關閉輸出圖檔
 
-
-## 將Seurat跑出的Cell cycle結果寫入Monocle3的cds檔
-cds@colData@listData$cell_cycle <- marrow@active.ident
-# cds@colData@listData$cell_cycle <- marrow@meta.data[["Phase"]]
-plot_cells(cds  , color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
-
-## Plot the Violin Plot
-Maingroup_ciliated_genes <- c(Main)
-cds_marrow_Maingroup <- cds[rowData(cds)$gene_short_name %in% Maingroup_ciliated_genes,]
-
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
-# Chage the color
-# http://www.sthda.com/english/wiki/ggplot2-violin-plot-quick-start-guide-r-software-and-data-visualization
-
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T)
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-  geom_boxplot(width=0.1, fill="white")
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main.png")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
-dev.off() # 關閉輸出圖檔
-
-##
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_CellCycle.png")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
-dev.off() # 關閉輸出圖檔
+###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
+cds <- CCToCDS(cds,marrow,colors_cc,Main) #這個function存在於Monocle3_To_Seurat.R裡面
 
 
 
