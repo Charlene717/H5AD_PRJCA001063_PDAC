@@ -43,6 +43,15 @@ Marker_List <- c(Marker_List_2,Marker_List)
 
 ############# Read file settings #############
 
+##################   (grepl Stroma)   ################## 
+Stroma_cds <- cds[,grepl("Stromal", colData(cds)$Broad.cell.type, ignore.case=TRUE)]
+plot_cells(Stroma_cds, reduction_method="tSNE", color_cells_by="partition")
+##################   (grepl Stroma)   ################## 
+
+
+
+
+
 
 ######################################## Gene list of interest ########################################
 Main = c("TOP2A")
