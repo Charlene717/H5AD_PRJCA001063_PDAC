@@ -23,7 +23,7 @@ library(garnett)
 ############# Import files settings #############
 ## General setting
 PathName = setwd(getwd())
-RVersion = "20210521V1"
+RVersion = "20210523V1"
 dir.create(paste0(PathName,"/",RVersion))
 
 ## Marker genes file
