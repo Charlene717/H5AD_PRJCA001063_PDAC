@@ -1,9 +1,3 @@
-
-###### Cell-Cycle Scoring and Regression (for Monocle3) ######
-# GeneNAFMT <- c("HuGSymbol") # Gene names format  of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
-
-CCScorReg <- function(GeneNAFMT,marrow,colors_cc) {
-## (Version 2)
 ## Load package
 library(Seurat)
 library(SummarizedExperiment) 
@@ -12,6 +6,13 @@ library(org.Mm.eg.db)
 library('org.Hs.eg.db')
 library(Hmisc)
 library(tidyverse)
+library(monocle3)
+
+###### Cell-Cycle Scoring and Regression (for Monocle3) ######
+# GeneNAFMT <- c("HuGSymbol") # Gene names format  of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
+
+CCScorReg <- function(GeneNAFMT,marrow,colors_cc,Main) {
+## (Version 2)
 
 ## Cell cycle genes file
 cc.genes_list <- read.csv(paste0(PathName,"/Cell cycle/regev_lab_cell_cycle_genesCh.csv")) # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with Seurat. 
@@ -67,63 +68,55 @@ if (GeneNAFMT=="HuGSymbol") {
 
 marrow <- CellCycleScoring(marrow, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 
-# view cell cycle scores and phase assignments
-head(marrow[[]])
+ ## view cell cycle scores and phase assignments
+ head(marrow[[]])
 
-colorsT <- c("#FF9912B3", "#32CD3299", "#4169E1B3") 
-RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 1)
-# https://datavizpyr.com/ridgeline-plot-with-ggridges-in-r/
-# https://www.r-graph-gallery.com/294-basic-ridgeline-plot.html
-RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 2,log=TRUE) 
-RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 2,y.max = 100) 
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_RidgePlot_Main.png")) # 設定輸出圖檔
-RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 1) 
-# RidgePlot(marrow,cols = colorsT, features = c(Main), ncol = 2,idents=c("G1","S","G2M")) 
-# RidgePlot(marrow, features = c(MainGroup[,1]), ncol = 2,idents=c("G1","S","G2M"),sort= 'increasing' ,same.y.lims=TRUE) 
-dev.off() # 關閉輸出圖檔
-
-return(marrow2)
+return(marrow)
 }
 
 
 
 ###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
 
-CCToCDS <- function(marrow,Main,colors_cc) {
+CCToCDS <- function(cds,marrow,colors_cc,Main) {
 
 ## 將Seurat跑出的Cell cycle結果寫入Monocle3的cds檔
 cds@colData@listData$cell_cycle <- marrow@active.ident
 # cds@colData@listData$cell_cycle <- marrow@meta.data[["Phase"]]
 
-plot_cells(cds  , color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colorsT)
+plot_cells(cds, color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
 
 ## Plot the violin diagram
 Maingroup_ciliated_genes <- c(Main)
-cds_marrow_subset <- cds[rowData(cds)$gene_short_name %in% Maingroup_ciliated_genes,]
+cds_marrow_cc <- cds[rowData(cds)$gene_short_name %in% Maingroup_ciliated_genes,]
 
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colorsT)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
 # Chage the color
 # http://www.sthda.com/english/wiki/ggplot2-violin-plot-quick-start-guide-r-software-and-data-visualization
 
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = T)
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colorsT)
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colorsT)+
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
   geom_boxplot(width=0.1, fill="white")
 
 png(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main.png")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
+plot_genes_violin(cds_marrow_cct, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off() # 關閉輸出圖檔
+
+pdf(paste0(PathName,"/",RVersion,"/",RVersion,"_","CellCycle_Violin_Main.pdf")) # 設定輸出圖檔
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
   theme(axis.text.x=element_text(angle=45, hjust=1))
 dev.off() # 關閉輸出圖檔
 
 ##
 png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_CellCycle.png")) # 設定輸出圖檔
-plot_genes_violin(cds_marrow_subset, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colorsT)
+plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
 dev.off() # 關閉輸出圖檔
 
 
-return(cds2)
+return(cds)
 }
 
 
