@@ -14,6 +14,15 @@ getFilePath <- function(fileName) {
   return(sourceObj)
 }
 
-getFilePath("Call_functionsTTT.R")
+## Convert Monocle3 Object to Seurat Object
+getFilePath("Monocle3_To_Seurat.R")
 print(paste("filePath:",filePath))
-Convert.stringToInt("1")   #這個function存在於methods.R裡面
+marrow <- Monocle3_To_Seurat(cds) #這個function存在於Monocle3_To_Seurat.R裡面
+
+## Assign Cell-Cycle Scores
+getFilePath("Cell-Cycle Scoring and Regression.R")
+marrow <- CCScorReg(GeneNAFMT,marrow,colors_cc,Main) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
+
+## PlotViolin 
+getFilePath("PlotViolin.R")
+TTT <- PlotViolin (cds,colors_cc,Main)
