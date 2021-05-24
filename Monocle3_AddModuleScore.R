@@ -23,11 +23,12 @@ Monocle3_AddModuleScore <- function(Marker_file_Name,Marker_Name,marrow,cds) {
   return(cds)
 }
 
- Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
- Marker_Name <- c("PDAC_Marker")
- cds <- Monocle3_AddModuleScore(Marker_file_Name,Marker_Name,marrow,cds)
- plot_cells(cds, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
- 
- cds_sub_DucT2 <- Monocle3_AddModuleScore(Marker_file_Name,Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
- plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
- 
+
+# # Test
+#  Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
+#  Marker_Name <- c("PDAC_Marker")
+#  cds <- Monocle3_AddModuleScore(Marker_file_Name,Marker_Name,marrow,cds)
+#  plot_cells(cds, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+#  
+#  cds_sub_DucT2 <- Monocle3_AddModuleScore(Marker_file_Name,Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
+#  plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
