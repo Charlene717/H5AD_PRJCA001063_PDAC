@@ -248,6 +248,18 @@ dev.off() # Ãö³¬¿é¥X¹ÏÀÉ
 
 
 
+###### Cell discrimination ######
+getFilePath("Monocle3_AddModuleScore.R")
+
+PDAC_Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
+PDAC_Marker_Name <- c("PDAC_Marker")
+
+cds <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow,cds)
+plot_cells(cds, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+
+cds_sub_DucT2 <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
+plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+
 
 # ##################
 # library(garnett)
