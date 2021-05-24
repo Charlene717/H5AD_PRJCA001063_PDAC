@@ -247,8 +247,9 @@ plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale 
 dev.off() # 關閉輸出圖檔
 
 
+##############  Annotate your cells according to type (Custom Marker)  ##############
 
-############ Cell discrimination by AddModuleScore ############
+############    Cell discrimination by AddModuleScore    ############
 getFilePath("Monocle3_AddModuleScore.R")
 
 PDAC_Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
@@ -257,11 +258,11 @@ PDAC_Marker_Name <- c("PDAC_Marker")
 cds <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow,cds)
 plot_cells(cds, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
 
-cds_sub_DucT2 <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
-plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+# cds_sub_DucT2 <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
+# plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
 
 
-############ Cell discrimination by Garnett ############
+############       Cell discrimination by Garnett      ############
 Human_classifier_cds <- train_cell_classifier(cds = cds,
                                           marker_file = Garnett_Marker_file,   # Import the marker_file
                                           db=org.Hs.eg.db::org.Hs.eg.db,
@@ -296,50 +297,7 @@ dev.off() # 關閉輸出圖檔
 
 
 
-
-# ##################
-# library(garnett)
-# ## Install the monocle3 branch of garnett
-# # BiocManager::install(c("org.Mm.eg.db", "org.Hs.eg.db"))
-# # devtools::install_github("cole-trapnell-lab/garnett", ref="monocle3")
-# # Install problem
-# # https://stackoverflow.com/questions/42807247/installing-package-cannot-open-file-permission-denied
-# 
-# colData(cds)$garnett_cluster <- clusters(cds)
-# Human_classifier <- train_cell_classifier(cds = cds,
-#                                           marker_file = Marker_file,   # Import the marker_file
-#                                           db=org.Hs.eg.db::org.Hs.eg.db,
-#                                           cds_gene_id_type = "SYMBOL",
-#                                           #num_unknown = 2215,
-#                                           #max_training_samples = 10000,
-#                                           marker_file_gene_id_type = "SYMBOL",
-#                                           cores=8)
-# 
-# 
-# cds_subset <- classify_cells(cds, Human_classifier,
-#                              db = org.Hs.eg.db::org.Hs.eg.db,
-#                              cluster_extend = TRUE,
-#                              cds_gene_id_type = "SYMBOL")
-# 
-# 
-# 
-# png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Marker_file_Name,".png")) # 設定輸出圖檔
-# plot_cells(cds,
-#            group_cells_by="cluster",
-#            cell_size=1.5,
-#            color_cells_by="cluster_ext_type", show_trajectory_graph = FALSE)
-# dev.off() # 關閉輸出圖檔
-# 
-# png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Marker_file_Name,"_2.png")) # 設定輸出圖檔
-# plot_cells(cds,
-#            group_cells_by="cluster",
-#            cell_size=1.5,
-#            color_cells_by="cluster_ext_type",
-#            label_cell_groups=FALSE, show_trajectory_graph = FALSE)
-# dev.off() # 關閉輸出圖檔
-
-
-########### Constructing single-cell trajectories ###########
+####################### Constructing single-cell trajectories #######################
 cds <- learn_graph(cds)
 plot_cells(cds,
            color_cells_by = "cluster",
@@ -363,6 +321,8 @@ plot_genes_in_pseudotime(MainGroup_lineage_cds,
                          min_expr=0.5)+ scale_color_manual(values = colors_cc)
 
 
+
+
 ######################################  cds_subset ########################################
 ########################  DucT2 ##########################
 cds_sub_DucT2 <- choose_cells(cds)
@@ -375,6 +335,7 @@ dev.off() # 關閉輸出圖檔
 
 cds_subset_NewK <- cluster_cells(cds_sub_DucT2,k = k_cds_sub_DucT2, resolution=1e-5)
 plot_cells(cds_subset_NewK, color_cells_by = "cluster", label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+ 
  png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_","_sub_DucT2_cluster_cluster_clu_NewK",".png")) # 設定輸出圖檔
  plot_cells(cds_subset_K20, color_cells_by = "cluster", label_cell_groups=FALSE, show_trajectory_graph = FALSE)
  dev.off() # 關閉輸出圖檔
@@ -383,8 +344,17 @@ plot_cells(cds_subset_NewK, color_cells_by = "cluster", label_cell_groups=FALSE,
  plot_cells(cds_subset_NewK, genes=c(Main),cell_size=1,label_cell_groups = FALSE, show_trajectory_graph = FALSE)
  dev.off() # 關閉輸出圖檔
 
+ ############    Cell discrimination by AddModuleScore (DucT2)   ############
+ # getFilePath("Monocle3_AddModuleScore.R")
  
-######  Find marker genes expressed by each cluster ######
+ PDAC_Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
+ PDAC_Marker_Name <- c("PDAC_Marker")
+ 
+ cds_sub_DucT2 <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
+ plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+ 
+ 
+######  Find marker genes expressed by each cluster (DucT2) ######
 marker_test_res_DucT2 <- top_markers(cds_subset_NewK, group_cells_by="cluster")
 
 top_specific_markers_DucT2 <- marker_test_res_DucT2 %>%
@@ -439,7 +409,7 @@ generate_garnett_marker_file(garnett_markers_DucT2,max_genes_per_group = 100, fi
 
 
 
-########################  DucT2_TOP2ACenter ##########################
+########################  DucT2_TOP2A_Center ##########################
 cds_sub_DucT2_TOP2ACenter <- choose_cells(cds_subset_NewK)
 plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE)
 plot_cells(cds_sub_DucT2_TOP2ACenter, label_cell_groups=FALSE, show_trajectory_graph = FALSE, cell_size = 2)
@@ -577,59 +547,6 @@ top_marker_HeteroCent_OriDucT2_Sub2 <- top_specific_markers_HeteroCent_OriDucT2[
 
 
 
-# ############  Annotate your cells according to type (Custom Marker)  ############
-# Cell type gene expression markers https://panglaodb.se/markers.html
-# https://www.ncbi.nlm.nih.gov/mesh?Db=mesh&Cmd=DetailsSearch&Term=%22Genetic+Markers%22%5BMeSH+Terms%5D
-#
-library(monocle3)
-library(garnett)
-## Install the monocle3 branch of garnett
-# BiocManager::install(c("org.Mm.eg.db", "org.Hs.eg.db"))
-# devtools::install_github("cole-trapnell-lab/garnett", ref="monocle3")
-# Install problem
-# https://stackoverflow.com/questions/42807247/installing-package-cannot-open-file-permission-denied
-
-colData(cds_subset_K100)$garnett_cluster <- clusters(cds_subset_K100)
-
-# Installing Cicero
-# https://cole-trapnell-lab.github.io/cicero-release/docs_m3/#installing-cicero
-library(cicero)
-Human_classifier <- train_cell_classifier(cds = cds_subset_K100,
-                                          marker_file = Garnett_Marker_file,   # Import the marker_file
-                                          db=org.Hs.eg.db::org.Hs.eg.db,
-                                          cds_gene_id_type = "SYMBOL",
-                                          #num_unknown = 2215,
-                                          #max_training_samples = 10000,
-                                          marker_file_gene_id_type = "SYMBOL",
-                                          cores=8)
-
-
-cds_subset <- classify_cells(cds_subset_K100, Human_classifier,
-                      db = org.Hs.eg.db::org.Hs.eg.db,
-                      cluster_extend = TRUE,
-                      cds_gene_id_type = "SYMBOL")
-
-
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Marker_file_Name,".png")) # 設定輸出圖檔
-plot_cells(cds_subset,
-           group_cells_by="cluster",
-           cell_size=1.5,
-           color_cells_by="cluster_ext_type", show_trajectory_graph = FALSE)
-dev.off() # 關閉輸出圖檔
-
-png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Marker_file_Name,"_2.png")) # 設定輸出圖檔
-plot_cells(cds_subset,
-           group_cells_by="cluster",
-           cell_size=1.5,
-           color_cells_by="cluster_ext_type",
-           label_cell_groups=FALSE, show_trajectory_graph = FALSE)
-dev.off() # 關閉輸出圖檔
-
-
-
-
-############  Annotate your cells according to type (Custom Marker)  ############
 
 
 
