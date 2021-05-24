@@ -248,7 +248,7 @@ dev.off() # 關閉輸出圖檔
 
 
 
-###### Cell discrimination ######
+############ Cell discrimination by AddModuleScore ############
 getFilePath("Monocle3_AddModuleScore.R")
 
 PDAC_Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
@@ -259,6 +259,42 @@ plot_cells(cds, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_traje
 
 cds_sub_DucT2 <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow_sub_DucT2,cds_sub_DucT2)
 plot_cells(cds_sub_DucT2, color_cells_by= Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+
+
+############ Cell discrimination by Garnett ############
+Human_classifier_cds <- train_cell_classifier(cds = cds,
+                                          marker_file = Garnett_Marker_file,   # Import the marker_file
+                                          db=org.Hs.eg.db::org.Hs.eg.db,
+                                          cds_gene_id_type = "SYMBOL",
+                                          #num_unknown = 2215,
+                                          #max_training_samples = 10000,
+                                          marker_file_gene_id_type = "SYMBOL",
+                                          cores=8)
+
+
+cds_Garnett <- classify_cells(cds, Human_classifier_cds,
+                             db = org.Hs.eg.db::org.Hs.eg.db,
+                             cluster_extend = TRUE,
+                             cds_gene_id_type = "SYMBOL")
+
+
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Marker_file_Name,".png")) # 設定輸出圖檔
+plot_cells(cds_Garnett,
+           group_cells_by="cluster",
+           cell_size=1.5,
+           color_cells_by="cluster_ext_type", show_trajectory_graph = FALSE)
+dev.off() # 關閉輸出圖檔
+
+png(paste0(PathName,"/",RVersion,"/",RVersion,"_","UMAP_",Marker_file_Name,"_2.png")) # 設定輸出圖檔
+plot_cells(cds_Garnettt,
+           group_cells_by="cluster",
+           cell_size=1.5,
+           color_cells_by="cluster_ext_type",
+           label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+dev.off() # 關閉輸出圖檔
+
+
+
 
 
 # ##################
