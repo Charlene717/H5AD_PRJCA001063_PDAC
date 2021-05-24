@@ -3,6 +3,8 @@
 #############
 rm(list = ls()) # Clean variable
 
+memory.limit(150000)
+
 ############# Library list #############
 library(SummarizedExperiment)
 library(Seurat)
@@ -31,6 +33,9 @@ Marker_file_Name <- c("NAKAMURA_METASTASIS_MODEL_UP")
 Marker_file <- paste0(PathName,"/",Marker_file_Name,".txt")
 Marker_List <- read.delim(Marker_file,header=F,sep= c("\t"))
 Marker_List2 <- as.data.frame(Marker_List[-1:-2,])
+
+Garnett_Marker_file_Name <- c("NAKAMURA_METASTASIS_MODEL_M18483")
+Garnett_Marker_file <- paste0(PathName,"/marker_file_",Garnett_Marker_file_Name,".txt")
 
 ## Cell cycle genes file
 cc.genes_list <- read.csv(paste0(PathName,"/Cell cycle/regev_lab_cell_cycle_genesCh.csv")) # A list of cell cycle markers, from Tirosh et al, 2015, is loaded with Seurat. 
@@ -78,6 +83,21 @@ Stroma_cds <- cds[,grepl("Stromal", colData(cds)$Broad.cell.type, ignore.case=TR
 plot_cells(Stroma_cds, reduction_method="tSNE", color_cells_by="partition")
 
 
+##################  Function setting ################## 
+
+## Call function
+filePath <- ""
+#匯入 同一個資料夾中的R檔案
+getFilePath <- function(fileName) {
+  # path <- setwd("~")  #專案資料夾絕對路徑
+  path <- setwd(getwd()) 
+  #字串合併無間隔
+  # 「<<-」為全域變數給值的指派
+  filePath <<- paste0(path ,"/" , fileName)  
+  # 載入檔案
+  sourceObj <- source(filePath)
+  return(sourceObj)
+}
 
 
 
@@ -438,26 +458,34 @@ plot_genes_in_pseudotime(MainGroup_lineage_sub_DT2TOP2ACTR,
 
 
 ########################  DucT2_TOP2ACenter trajectories ##########################
-cds_sub_DucT2_TOP2ACenter_T1 <- choose_graph_segments(cds_sub_DucT2 ,clear_cds = FALSE)
+for (i in c(1:8)) {
+ 
+  cds_sub_DucT2_TOP2ACenter_Tn <- choose_graph_segments(cds_sub_DucT2 ,clear_cds = FALSE)
+  plot_cells(cds_sub_DucT2_TOP2ACenter_Tn, color_cells_by="cell_cycle",cell_size=2, 
+             label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
+  
+  ###### Convert Monocle3 Object to Seurat Object ######
+  # getFilePath("Monocle3_To_Seurat.R")
+  marrow_sub_DucT2_TOP2ACenter_Tn <- Monocle3_To_Seurat(cds_sub_DucT2_TOP2ACenter_Tn,paste0("sub_DT2TOP2ACTR_T", i)) #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
+  
+  ###### Assign Cell-Cycle Scores ######
+  # getFilePath("Cell-Cycle Scoring and Regression.R")
+  marrow_sub_DucT2_TOP2ACenter_Tn <- CCScorReg(GeneNAFMT,marrow_sub_DucT2_TOP2ACenter_Tn) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
+  assign(paste0("marrow_sub_DucT2_TOP2ACenter_T", i),marrow_sub_DucT2_TOP2ACenter_Tn)
+  
+  ###### Insert the cell cycle results from Seurat into the  Monocle3 cds object ######
+  cds_sub_DucT2_TOP2ACenter_Tn@colData@listData$cell_cycle <- marrow_sub_DucT2_TOP2ACenter_Tn@active.ident
+  plot_cells(cds_sub_DucT2_TOP2ACenter_Tn, color_cells_by="cell_cycle", label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
+  assign(paste0("cds_sub_DucT2_TOP2ACenter_T", i),cds_sub_DucT2_TOP2ACenter_Tn)
+  
+  ###### PCA Scores for finding significantly different genes at the endpoints ######
+  getFilePath("PCA_Threshold.R")
+  PCA_DT2TOP2ACTR_Tn <- assign(paste0("PCA_DT2TOP2ACTR_T", i),marrow_sub_DucT2_TOP2ACenter_Tn@reductions[["pca"]]@feature.loadings)
+  assign(paste0("PCA_DT2TOP2ACTR_T", i,"_PC_Sum"),PCA_Threshold_Pos(PCA_DT2TOP2ACTR_Tn, i ,PCAThreshold_Pos))
+  assign(paste0("PCA_DT2TOP2ACTR_T", i,"_NC_Sum"),PCA_Threshold_Neg(PCA_DT2TOP2ACTR_Tn, i ,PCAThreshold_Neg))
 
-plot_cells(cds_sub_DucT2_TOP2ACenter_T1, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
-
-###### Convert Monocle3 Object to Seurat Object ######
-# getFilePath("Monocle3_To_Seurat.R")
-marrow_sub_DucT2_TOP2ACenter_T1 <- Monocle3_To_Seurat(cds_sub_DucT2_TOP2ACenter_T1,"sub_DT2TOP2ACTR_T1") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
-
-###### Assign Cell-Cycle Scores ######
-# getFilePath("Cell-Cycle Scoring and Regression.R")
-marrow_sub_DucT2_TOP2ACenter_T1 <- CCScorReg(GeneNAFMT,marrow_sub_DucT2_TOP2ACenter_T1) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
-
-###### PCA Scores for finding significantly different genes at the endpoints ######
-getFilePath("PCA_Threshold.R")
-
-PCA_DT2TOP2ACTR_T1 <- marrow_sub_DucT2_TOP2ACenter_T1@reductions[["pca"]]@feature.loadings
-PCA_DT2TOP2ACTR_T1_PC_Sum <- PCA_Threshold_Pos(PCA_DT2TOP2ACTR_T1,1,PCAThreshold_Pos)
-PCA_DT2TOP2ACTR_T1_NC_Sum <- PCA_Threshold_Neg(PCA_DT2TOP2ACTR_T1,1,PCAThreshold_Neg)
-
-
+  rm(cds_sub_DucT2_TOP2ACenter_Tn,marrow_sub_DucT2_TOP2ACenter_Tn)
+  }
 
 
 
@@ -473,8 +501,7 @@ plot_cells(cds_sub_HeteroCent_K100, label_cell_groups=FALSE, color_cells_by = "c
 dev.off() # 關閉輸出圖檔
 
 ##  Find marker genes expressed by each cluster
-marker_test_HeteroCent_OriDucT2 <- top_markers(cds_sub_HeteroCent_K100, group_cells_by="cluster", 
-                                     reference_cells=1000, cores=8)
+marker_test_HeteroCent_OriDucT2 <- top_markers(cds_sub_HeteroCent_K100, group_cells_by="cluster")
 
 top_specific_markers_HeteroCent_OriDucT2 <- marker_test_HeteroCent_OriDucT2 %>%
   filter(fraction_expressing >= 0.10) %>%
@@ -502,11 +529,6 @@ top_marker_HeteroCent_OriDucT2_Sub2 <- top_specific_markers_HeteroCent_OriDucT2[
 
 
 
-
-
-########################  cds_subset ##########################
-
-
 # ############  Annotate your cells according to type (Custom Marker)  ############
 # Cell type gene expression markers https://panglaodb.se/markers.html
 # https://www.ncbi.nlm.nih.gov/mesh?Db=mesh&Cmd=DetailsSearch&Term=%22Genetic+Markers%22%5BMeSH+Terms%5D
@@ -525,7 +547,7 @@ colData(cds_subset_K100)$garnett_cluster <- clusters(cds_subset_K100)
 # https://cole-trapnell-lab.github.io/cicero-release/docs_m3/#installing-cicero
 library(cicero)
 Human_classifier <- train_cell_classifier(cds = cds_subset_K100,
-                                          marker_file = Marker_file,   # Import the marker_file
+                                          marker_file = Garnett_Marker_file,   # Import the marker_file
                                           db=org.Hs.eg.db::org.Hs.eg.db,
                                           cds_gene_id_type = "SYMBOL",
                                           #num_unknown = 2215,
@@ -581,12 +603,31 @@ pheatmap::pheatmap(agg_mat, cluster_rows=TRUE, cluster_cols=TRUE,
 
 
 ############ Working with 3D trajectories ############
-cds_3d <- reduce_dimension(cds, max_components = 3)
+cds_3d <- reduce_dimension(cds, max_components = 3,preprocess_method = 'PCA')
 cds_3d <- cluster_cells(cds_3d)
 cds_3d <- learn_graph(cds_3d)
 cds_3d <- order_cells(cds_3d, root_pr_nodes=get_earliest_principal_node(cds))
+# Error in get_earliest_principal_node(cds) : 
+#   沒有這個函數 "get_earliest_principal_node"
 
 cds_3d_plot_obj <- plot_cells_3d(cds_3d, color_cells_by="partition")
+plot_cells_3d(cds_3d)
+plot_cells_3d(cds_3d, color_cells_by="cluster", show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d, color_cells_by="Cell_type", show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d, color_cells_by="Type", show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d, color_cells_by="Patient", show_trajectory_graph = FALSE)
+# plot_cells_3d(cds_3d, color_cells_by="CONDITION", show_trajectory_graph = FALSE)
+cds_3d@colData@listData$PDAC_Marker <- marrow_PDAC_Marker@meta.data[["PDAC_Marker1"]]
+plot_cells_3d(cds_3d, color_cells_by="PDAC_Marker", show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d, genes = Main, show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d, color_cells_by="cell_cycle", show_trajectory_graph = FALSE)
 
+cds_3d_sub_DucT2_TOP2ACenter <- reduce_dimension(cds_sub_DucT2_TOP2ACenter, max_components = 3,preprocess_method = 'PCA')
+plot_cells_3d(cds_3d_sub_DucT2_TOP2ACenter, genes = Main, show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d_sub_DucT2_TOP2ACenter, color_cells_by="cell_cycle", show_trajectory_graph = FALSE)
 
+cds_3d_sub_DucT2 <- reduce_dimension(cds_sub_DucT2, max_components = 3,preprocess_method = 'PCA')
+plot_cells_3d(cds_3d_sub_DucT2, genes = Main, show_trajectory_graph = FALSE)
+plot_cells_3d(cds_3d_sub_DucT2, color_cells_by="cell_cycle", show_trajectory_graph = FALSE)
 
+ 
