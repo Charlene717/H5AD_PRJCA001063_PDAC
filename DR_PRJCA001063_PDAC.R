@@ -4,7 +4,7 @@
 rm(list = ls()) # Clean variable
 
 memory.limit(150000)
-
+set.seed(1) # Fix the seed
 ############# Library list #############
 library(SummarizedExperiment)
 library(Seurat)
@@ -57,7 +57,9 @@ library(garnett)
   ## Gene list of interest 
   Main = c("TOP2A")
   Main_Group = c("TOP2A","TP53","CGAS","PTK2")
-  Main_Group2 = c("KRAS","EXO1","NSUN2","MUC1","AMBP","FXYD2","TOP2B","CCNE1")
+  Main_Group2 = c("KRAS","EXO1","TP53","CGAS","H2AX","PTK2")
+  
+  Main_Group3 = c("KRAS","EXO1","NSUN2","MUC1","AMBP","FXYD2","TOP2B","CCNE1")
   EMT_Meta = c("ANLN","APLP2","CD63","CDH2","CLIC4","CTSB","CX3CR1","DSG2","EDNRB")
   candidates14 = c("BRIP1","KIF23","TOP2A","FOSL1","FAM25A","ANLN","NCAPH","KRT9","MCM4","CKAP2L","CENPE","RACGAP1","DTL","RAD51AP1")
   
@@ -71,7 +73,10 @@ library(garnett)
   GeneNAFMT <- c("HuGSymbol") # Gene names format of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
   
   ## Cluster cells setting
-  k_cds_sub_DucT2 <- c(100) # k for ductal cell type2
+  k_cds_sub_DucT2 <- c(5) # k for ductal cell type2
+  k_cds_sub_AcinaDucT <- 7 # k for Acinar + ductal cell type
+
+  k_cds_sub_DucT2_HG <- c(4)
   
   ## Threshold of PCA scores
   PCAThreshold_Pos <- 0.03
@@ -144,6 +149,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     
     
     ##### Group cells into clusters ######
+    set.seed(1) # Fix the seed
     cds <- cluster_cells(cds)
     plot_cells(cds, color_cells_by = "partition", label_cell_groups=FALSE, show_trajectory_graph = FALSE)
     plot_cells(cds, color_cells_by = "cluster", label_cell_groups=FALSE, show_trajectory_graph = FALSE)
@@ -193,12 +199,41 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
         ####################    Cell discrimination by AddModuleScore    ####################
         getFilePath("Monocle3_AddModuleScore.R")
         
-        PDAC_Marker_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
-        PDAC_Marker_Name <- c("PDAC_Marker")
+        Marker_PDAC_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
+        Marker_PDAC_Name <- c("PDAC")
+        cds <- Monocle3_AddModuleScore(Marker_PDAC_file_Name,Marker_PDAC_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+        plot_cells(cds, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                                         guide = "colourbar",midpoint = 0.2, labs(fill = Marker_PDAC_Name))
         
-        cds <- Monocle3_AddModuleScore(PDAC_Marker_file_Name,PDAC_Marker_Name,marrow,cds)
-        plot_cells(cds, color_cells_by= PDAC_Marker_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+        Marker_EMT_file_Name <- c("HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION")
+        Marker_EMT_Name <- c("EMT")
+        cds <- Monocle3_AddModuleScore(Marker_EMT_file_Name,Marker_EMT_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_EMT_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                   scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                                          guide = "colourbar",midpoint = 0.2, labs(fill = Marker_EMT_Name))
+
+        Marker_ChroSt_file_Name <- c("HP_ABNORMALITY_OF_CHROMOSOME_STABILITY")
+        Marker_ChroSt_Name <- c("CST")
+        cds <- Monocle3_AddModuleScore(Marker_ChroSt_file_Name,Marker_ChroSt_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_ChroSt_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ChroSt_Name))
+
+        Marker_Mig_file_Name <- c("GOBP_POSITIVE_REGULATION_OF_EPITHELIAL_CELL_MIGRATION")
+        Marker_Mig_Name <- c("Migration")
+        cds <- Monocle3_AddModuleScore(Marker_Mig_file_Name,Marker_Mig_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_Mig_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Mig_Name))
         
+        Marker_Meta_file_Name <- c("NAKAMURA_METASTASIS_MODEL_UP")
+        Marker_Meta_Name <- c("Metastasis")
+        cds <- Monocle3_AddModuleScore(Marker_Meta_file_Name,Marker_Meta_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
  
         ####################   Cell discrimination by Garnett  ####################
         Human_classifier_cds <- train_cell_classifier(cds = cds,
@@ -219,6 +254,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
 
     
     ####################### Constructing single-cell trajectories #######################
+    cds2 <-cds
     cds <- learn_graph(cds)
     plot_cells(cds,
                color_cells_by = "cluster",
@@ -239,12 +275,220 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     
         ######################################  cds_subset ########################################
             ##################  Grab specific terms ################## 
-                ## grepl Stroma
-                Stroma_cds <- cds[,grepl("Stromal", colData(cds)$Broad.cell.type, ignore.case=TRUE)]
-                plot_cells(Stroma_cds, reduction_method="tSNE", color_cells_by="partition")
+                ## grepl Ductal cell type 2
+                cds_sub_DucT2 <- cds[,grepl("Ductal cell type 2", colData(cds)$Cell_type, ignore.case=TRUE)]
+                plot_cells(cds_sub_DucT2, color_cells_by="partition")
+                plot_cells(cds_sub_DucT2, color_cells_by="partition", show_trajectory_graph = F)
+                plot_cells(cds_sub_DucT2, genes=c(Main),cell_size=1,label_cell_groups = FALSE, show_trajectory_graph = FALSE)
+                plot_cells(cds_sub_DucT2, genes=c(Main_Group),cell_size=0.5,label_cell_groups = FALSE, show_trajectory_graph = FALSE)
+                
+                ## Ductal cell type & cds_sub_AcinaDucT
+                cds_sub_AcinaDucT <- cds[,colData(cds)$Cell_type %in% c("Acinar cell","Ductal cell type 1","Ductal cell type 2")]
+                plot_cells(cds_sub_AcinaDucT, color_cells_by="cluster", show_trajectory_graph = F)
         
+                
+        ########################  AcinaDucT (choose_cells) ##########################
+                cds_sub_AcinaDucT <- choose_cells(cds)
+                plot_cells(cds_sub_AcinaDucT, color_cells_by="cluster", show_trajectory_graph = F)
+                
+                set.seed(1) # Fix the seed
+                cds_sub_AcinaDucT_NewK <- cluster_cells(cds_sub_AcinaDucT,k = k_cds_sub_AcinaDucT, resolution=1e-5)
+                plot_cells(cds_sub_AcinaDucT_NewK, color_cells_by = "cluster",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+                plot_cells(cds_sub_AcinaDucT_NewK, color_cells_by = "cluster",cell_size=2, 
+                           label_cell_groups=TRUE, show_trajectory_graph = FALSE, group_label_size = 5)
+                
+                ######## Reorganize the Cluster for AcinaDucT ####
+                cds_sub_AcinaDucT_NewK_ReCluster <- cds_sub_AcinaDucT_NewK
+                colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type <- 
+                        as.character(clusters(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster)])
+                colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type <- 
+                        dplyr::recode(colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type,
+                                                                        "6"="AC",
+                                      
+                                                                        "24"="nAtD",
+                                                                        "29"="nAtD",
+                                      
+                                                                        "14"="aAtD",
+                                      
+                                                                        "8"="ND01",
+                                                                        "1"="ND02",
+                                                                        "3"="ND03",
+                                                                        "13"="ND04",
+                                      
+                                                                        "2"="AD",
+                                      
+                                                                        "28"="MD00",
+                                      
+                                                                        "18"="MDC01",
+                                                                        "26"="MDC02",
+                                                                     #  "?" ="MDC03",
+                                                                        "4"="MDC00",
+                                                                        "19"="MDC04",
+                                                                        "9"="MDC05",
+                                                                        "16"="MDC06",
+                                                                        "15"="MDC07",
+                                                                     #  "?" ="MDC08",
+                                      
+                                                                        "11"="MDO01",
+                                                                        "25"="MDO02",
+                                                                        "30"="MDO02",
+                                                                        "22"="MDO03",
+                                                                        "12"="MDO04",
+                                                                        "21"="MDO05",
+                                                                        "10"="MDO06",
+                                                                        "17"="MDO07",
+                                                                        "27"="MDO07",
+                                                                        "7"="MDO08",
+                                                                        "23"="MDO09",
+                                                                        "5"="MDO10",
+                                                                        "20"="MDO11")
+                
+                
+                cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["assigned_cell_type"]]
+                
+                ## MDC03
+                cds_sub_AcinaDucT_NewK_ReCluster_MDC03 <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
+                colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC03)$assigned_cell_type <- "MDC03"
+                cds_sub_AcinaDucT_NewK_ReCluster_MDC03@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster_MDC03@colData@listData[["assigned_cell_type"]]
+                
+                ## MDC08
+                cds_sub_AcinaDucT_NewK_ReCluster_MDC08 <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
+                colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC08)$assigned_cell_type <- "MDC08"
+                cds_sub_AcinaDucT_NewK_ReCluster_MDC08@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster_MDC08@colData@listData[["assigned_cell_type"]]
+                
+                
+                colData(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster_MDC03),]$assigned_cell_type <- colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC03)$assigned_cell_type
+                colData(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster_MDC08),]$assigned_cell_type <- colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC08)$assigned_cell_type
+                
+                cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["assigned_cell_type"]]
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by = "ReCluster",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by = "ReCluster",cell_size=2, 
+                           label_cell_groups=TRUE, show_trajectory_graph = FALSE, group_label_size =4)
+                
+                
+                
+                ############    Find marker genes expressed by each cluster (DucT2)   ############
+                marker_test_res_AcinaDucT <- top_markers(cds_sub_AcinaDucT_NewK_ReCluster, group_cells_by="ReCluster")
+                
+                top_specific_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(fraction_expressing >= 0.10) %>%
+                                                  group_by(cell_group) %>% top_n(10, pseudo_R2)
+                top_specific_marker_ids_AcinaDucT <- unique(top_specific_markers_AcinaDucT  %>% pull(gene_id))
+                
+                plot_genes_by_group(cds_sub_AcinaDucT_NewK_ReCluster, top_specific_marker_ids_AcinaDucT, group_cells_by="cluster",
+                                    ordering_type="maximal_on_diag", max.size=3)
+                plot_genes_by_group(cds_sub_AcinaDucT_NewK_ReCluster, top_specific_marker_ids_AcinaDucT,group_cells_by="cluster",
+                                    ordering_type="cluster_row_col",max.size=3)
+                
+                ## Get marker genes from each cluster
+                top_specific_markers_AcinaDucT_SubAD <- top_specific_markers_AcinaDucT[top_specific_markers_AcinaDucT$cell_group =="AD",]
+                #top_specific_markers_AcinaDucT_Sub2 <- top_specific_markers_AcinaDucT[top_specific_markers_AcinaDucT$cell_group =="2",]
+                #...
+                marker_test_res_AcinaDucT_SubAD <- marker_test_res_AcinaDucT[marker_test_res_AcinaDucT$cell_group =="AD",]
+                #marker_test_res_AcinaDucT_Sub2 <- marker_test_res_AcinaDucT[marker_test_res_AcinaDucT$cell_group =="2",]
+                #...
+                
+                ## Export a marker genes information file
+                write.table(marker_test_res_AcinaDucT, file=paste0(PathName,"/",RVersion,"/",RVersion,"_", 
+                                                               "AcinaDucT_marker_test_res.txt"),  sep="\t", row.names=FALSE)
+                
+                ## Generate a Garnett file
+                # Require that markers have at least JS specificty score > 0.1 and be significant in the logistic test for identifying their cell type:
+                garnett_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(marker_test_q_value < 0.01 & specificity >= 0.1) %>%
+                                             group_by(cell_group) %>% top_n(100, marker_score)
+                
+                # # Exclude genes that are good markers for more than one cell type:
+                # garnett_markers_DucT2 <- garnett_markers_DucT2 %>% 
+                #   group_by(gene_short_name) %>%
+                #   filter(n() == 1)
+                
+                generate_garnett_marker_file(garnett_markers_AcinaDucT,max_genes_per_group = 100, 
+                                             file=paste0(PathName,"/",RVersion,"/",RVersion,"_","AcinaDucT_marker_Garnett.txt"))
+                
+
+                ################ Plot Cell-Cycle Scoring and Regression (DucT2) ################ 
+                ## Convert Monocle3 Object to Seurat Object    # getFilePath("Monocle3_To_Seurat.R")
+                marrow_sub_AcinaDucT_NewK_ReCluster <- Monocle3_To_Seurat(cds_sub_AcinaDucT_NewK_ReCluster,"sub_AcinaDucT") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
+                
+                ###### Insert the cell cycle results from Monocle3 cds_sub into the  Seurat  marrow_sub ######
+                marrow_sub_AcinaDucT_NewK_ReCluster@active.ident <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData$cell_cycle
+                RidgePlot(marrow_sub_AcinaDucT_NewK_ReCluster,cols = colors_cc, features = c(Main_Group), ncol = 2)
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colors_cc)
+                
+                ## Plot the violin diagram
+                Maingroup_ciliated_genes <- c(Main_Group)
+                cds_marrow_cc_AcinaDucT_NewK_ReCluster <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% Maingroup_ciliated_genes,]
+                
+                plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = F)+ scale_fill_manual(values = colors_cc)
+                plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
+                plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
+                  geom_boxplot(width=0.1, fill="white") + theme(axis.text.x=element_text(angle=45, hjust=1))
+                
+                
+                ############    Plot Cell discrimination by AddModuleScore (AcinaDucT)   ############
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                           scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                                                 guide = "colourbar",midpoint = 0.2, labs(fill = Marker_PDAC_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_EMT_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                                         guide = "colourbar",midpoint = 0.2, labs(fill = Marker_EMT_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ChroSt_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ChroSt_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Mig_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Mig_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
         
-        ########################  DucT2 ##########################
+               
+               ####################### Constructing single-cell trajectories (AcinaDucT) #######################
+               cds3 <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_set' objects
+               cds3 <- estimate_size_factors(cds3) # issues with cds object in monocle3 #54 # https://github.com/satijalab/seurat-wrappers/issues/54
+               
+               ## Pre-process the data 
+               cds3 <- preprocess_cds(cds3, num_dim = 100)
+               plot_pc_variance_explained(cds3)
+               
+               ## Reduce dimensionality and visualize the cells
+               
+               ## UMAP
+               cds3 <- reduce_dimension(cds3,preprocess_method = 'PCA')
+               plot_cells(cds3)
+               
+               cds_sub_AcinaDucT2 <- choose_cells(cds3)
+               cds_sub_AcinaDucT2 <- cluster_cells(cds_sub_AcinaDucT2)
+               cds_sub_AcinaDucT2 <- learn_graph(cds_sub_AcinaDucT2, use_partition = F)
+               plot_cells(cds_sub_AcinaDucT2,
+                          color_cells_by = "cluster",
+                          label_cell_groups=FALSE, label_leaves=FALSE, label_branch_points=FALSE, graph_label_size=1.5)
+               
+               cds_sub_AcinaDucT2 <- order_cells(cds_sub_AcinaDucT2)
+               plot_cells(cds_sub_AcinaDucT2,
+                          color_cells_by = "pseudotime",
+                          label_cell_groups=FALSE, label_leaves=FALSE, label_branch_points=FALSE, graph_label_size=1.5)
+               
+               # MainGroup_lineage_cds_sub_AcinaDucT2 <- cds_sub_AcinaDucT2[rowData(cds_sub_AcinaDucT2)$gene_short_name %in% Main_Group]
+               # 
+               # plot_genes_in_pseudotime(MainGroup_lineage_cds_sub_AcinaDucT2, color_cells_by="cell_cycle",cell_size=2,
+               #                          min_expr=0.5)+ scale_color_manual(values = colors_cc)
+               
+               ##
+               cds_sub_AcinaToDucT2 <- choose_cells(cds3)
+               cds_sub_AcinaToDucT2 <- cluster_cells(cds_sub_AcinaToDucT2)
+               cds_sub_AcinaToDucT2 <- learn_graph(cds_sub_AcinaToDucT2, use_partition = F)
+               plot_cells(cds_sub_AcinaToDucT2,
+                          color_cells_by = "cluster",
+                          label_cell_groups=FALSE, label_leaves=FALSE, label_branch_points=FALSE, graph_label_size=1.5)
+               
+                        
+        ########################  DucT2 (choose_cells) ##########################
             cds_sub_DucT2 <- choose_cells(cds)
             #cds_subset <- reduce_dimension(cds_subset)
                 
@@ -316,11 +560,10 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
         
         
         ########################  DucT2_TOP2A_Center ##########################
-            cds_sub_DucT2_TOP2ACenter <- choose_cells(cds_sub_DucT2_NewK)
+            cds_sub_DucT2_TOP2ACenter <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
             plot_cells(cds_sub_DucT2_TOP2ACenter, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
             plot_cells(cds_sub_DucT2_TOP2ACenter, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colors_cc)
-            plot_cells(cds_sub_DucT2_TOP2ACenter_Ori, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colors_cc)
-           
+  
             
                 ###### Convert Monocle3 Object to Seurat Object ######
                 # getFilePath("Monocle3_To_Seurat.R")
@@ -340,7 +583,12 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
                                   scale_fill_manual(values = colors_cc) + 
                                   theme(axis.text.x=element_text(angle=45, hjust=1))
-        
+      
+                plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T) +
+                  scale_fill_manual(values = colors_cc) + theme(axis.text.x=element_text(angle=45, hjust=1))
+                plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
+                  geom_boxplot(width=0.1, fill="white") + theme(axis.text.x=element_text(angle=45, hjust=1))
+                
                 ## Plot pseudotime
                 MainGroup_lineage_sub_DT2TOP2ACTR <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main_Group]
                 plot_genes_in_pseudotime(MainGroup_lineage_sub_DT2TOP2ACTR,
@@ -434,9 +682,11 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     cds_3d <- reduce_dimension(cds, max_components = 3,preprocess_method = 'PCA')
     cds_3d <- cluster_cells(cds_3d)
     cds_3d <- learn_graph(cds_3d)
-    cds_3d <- order_cells(cds_3d, root_pr_nodes=get_earliest_principal_node(cds))
-    # Error in get_earliest_principal_node(cds) : 
-    #   沒有這個函數 "get_earliest_principal_node"
+    # cds_3d <- order_cells(cds_3d, root_pr_nodes=get_earliest_principal_node(cds))
+    # # Error in get_earliest_principal_node(cds) : 
+    # #   沒有這個函數 "get_earliest_principal_node"
+    #
+    # cds_3d <- order_cells(cds_3d)
     
     cds_3d_plot_obj <- plot_cells_3d(cds_3d, color_cells_by="partition")
     
@@ -446,8 +696,6 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
         plot_cells_3d(cds_3d, color_cells_by="Type", show_trajectory_graph = FALSE)
         plot_cells_3d(cds_3d, color_cells_by="Patient", show_trajectory_graph = FALSE)
     
-        ## plot_cells_3d(cds_3d, color_cells_by="CONDITION", show_trajectory_graph = FALSE)
-        cds_3d@colData@listData$PDAC_Marker <- marrow_PDAC_Marker@meta.data[["PDAC_Marker1"]]
         plot_cells_3d(cds_3d, color_cells_by="PDAC_Marker", show_trajectory_graph = FALSE)
         
         plot_cells_3d(cds_3d, genes = Main, show_trajectory_graph = FALSE)
