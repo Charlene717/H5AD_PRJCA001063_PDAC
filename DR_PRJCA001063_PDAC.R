@@ -367,8 +367,10 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 
                 
                 
-                ############    Find marker genes expressed by each cluster (DucT2)   ############
-                marker_test_res_AcinaDucT <- top_markers(cds_sub_AcinaDucT_NewK_ReCluster, group_cells_by="ReCluster")
+                ############    Find marker genes expressed by each cluster (AcinaDucT)   ############
+                set.seed(1) # Fix the seed
+                marker_test_res_AcinaDucT <- top_markers(cds_sub_AcinaDucT_NewK_ReCluster,
+                                                         genes_to_test_per_group = 25, group_cells_by="ReCluster")
                 
                 top_specific_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(fraction_expressing >= 0.10) %>%
                                                   group_by(cell_group) %>% top_n(10, pseudo_R2)
@@ -389,11 +391,11 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 
                 ## Export a marker genes information file
                 write.table(marker_test_res_AcinaDucT, file=paste0(PathName,"/",RVersion,"/",RVersion,"_", 
-                                                               "AcinaDucT_marker_test_res.txt"),  sep="\t", row.names=FALSE)
+                                                               "AcinaDucT_marker_test_res_GPG25.txt"),  sep="\t", row.names=FALSE)
                 
                 ## Generate a Garnett file
                 # Require that markers have at least JS specificty score > 0.1 and be significant in the logistic test for identifying their cell type:
-                garnett_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(marker_test_q_value < 0.01 & specificity >= 0.1) %>%
+                garnett_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(marker_test_q_value < 0.05 & specificity >= 0.1) %>%
                                              group_by(cell_group) %>% top_n(100, marker_score)
                 
                 # # Exclude genes that are good markers for more than one cell type:
@@ -402,10 +404,10 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 #   filter(n() == 1)
                 
                 generate_garnett_marker_file(garnett_markers_AcinaDucT,max_genes_per_group = 100, 
-                                             file=paste0(PathName,"/",RVersion,"/",RVersion,"_","AcinaDucT_marker_Garnett.txt"))
+                                             file=paste0(PathName,"/",RVersion,"/",RVersion,"_","AcinaDucT_marker_Garnett_GPG25_q005spe01.txt"))
                 
 
-                ################ Plot Cell-Cycle Scoring and Regression (DucT2) ################ 
+                ################ Plot Cell-Cycle Scoring and Regression (AcinaDucT) ################ 
                 ## Convert Monocle3 Object to Seurat Object    # getFilePath("Monocle3_To_Seurat.R")
                 marrow_sub_AcinaDucT_NewK_ReCluster <- Monocle3_To_Seurat(cds_sub_AcinaDucT_NewK_ReCluster,"sub_AcinaDucT") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
                 
@@ -487,7 +489,38 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                           color_cells_by = "cluster",
                           label_cell_groups=FALSE, label_leaves=FALSE, label_branch_points=FALSE, graph_label_size=1.5)
                
-                        
+               ######   PCA for trajectories
+               for (i in c(4:4)) {
+                 
+                 cds_sub_DucT2_TOP2ACenter_Tn <- choose_graph_segments(cds_sub_AcinaToDucT2 ,clear_cds = FALSE)
+                 plot_cells(cds_sub_DucT2_TOP2ACenter_Tn, color_cells_by="cluster",cell_size=2, 
+                            label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
+                 
+                 ###### Convert Monocle3 Object to Seurat Object ######
+                 # getFilePath("Monocle3_To_Seurat.R")
+                 marrow_sub_DucT2_TOP2ACenter_Tn <- Monocle3_To_Seurat(cds_sub_DucT2_TOP2ACenter_Tn,paste0("sub_DT2TOP2ACTR_T", i)) #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
+                 
+                 # ###### Insert the cell cycle results from Monocle3 cds_sub into the  Seurat  marrow_sub ######
+                 # marrow_sub_DucT2_TOP2ACenter_Tn@active.ident <- cds_sub_DucT2_TOP2ACenter_Tn@colData@listData$cell_cycle
+                 
+                 assign(paste0("marrow_sub_DucT2_TOP2ACenter_T", i),marrow_sub_DucT2_TOP2ACenter_Tn)
+                 
+                 plot_cells(cds_sub_DucT2_TOP2ACenter_Tn, color_cells_by="cluster", label_cell_groups=FALSE) + scale_color_manual(values = colors_cc)
+                 assign(paste0("cds_sub_DucT2_TOP2ACenter_T", i),cds_sub_DucT2_TOP2ACenter_Tn)
+                 
+                 ###### PCA Scores for finding significantly different genes at the endpoints ######
+                 getFilePath("PCA_Threshold.R")
+                 PCA_DT2TOP2ACTR_Tn <- assign(paste0("PCA_DT2TOP2ACTR_T", i),marrow_sub_DucT2_TOP2ACenter_Tn@reductions[["pca"]]@feature.loadings)
+                 assign(paste0("PCA_DT2TOP2ACTR_T", i,"_PC_Sum"),PCA_Threshold_Pos(PCA_DT2TOP2ACTR_Tn, i ,PCAThreshold_Pos))
+                 assign(paste0("PCA_DT2TOP2ACTR_T", i,"_NC_Sum"),PCA_Threshold_Neg(PCA_DT2TOP2ACTR_Tn, i ,PCAThreshold_Neg))
+                 
+                 rm(cds_sub_DucT2_TOP2ACenter_Tn,marrow_sub_DucT2_TOP2ACenter_Tn)
+               }
+               
+               
+               plot_cells(cds_sub_DucT2_TOP2ACenter_T4, label_cell_groups=FALSE, show_trajectory_graph = T)
+               
+              
         ########################  DucT2 (choose_cells) ##########################
             cds_sub_DucT2 <- choose_cells(cds)
             #cds_subset <- reduce_dimension(cds_subset)
