@@ -430,17 +430,16 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
           
           ##!!!!!! 
           Main = "TOP2A"
-          plot_cells(cds_sub_AcinaDucT, genes = Main, show_trajectory_graph = F,label_cell_groups = F
+          plot_cells(cds_Patient1, genes = Main, show_trajectory_graph = F,label_cell_groups = F
                      ,cell_size =1 )+
             scale_colour_gradient2(low = "black", mid = "#3528c7", high = "#ff85e9", 
                                    guide = "colourbar",midpoint = 0, labs(fill ="Exp")) +
             ggtitle(Main)+
-            
             theme(axis.text.x = element_text(face="bold",  size=14),
                   axis.text.y = element_text(face="bold",size=14),
                   axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
                   axis.title = element_text(size = rel(1.5),face="bold"),
-                  plot.title = element_text(color="black", size=20, 
+                  plot.title = element_text(color="black", size=17, 
                                             face="bold.italic",hjust = 0.1,vjust =-10), # margin = margin(t = 0.5, b = -7),
              #     plot.background = element_rect(fill = 'chartreuse'),
                   legend.title = element_text(size=12, color = "black", face="bold"),
@@ -452,6 +451,34 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
             theme(axis.line.x = element_line(colour = "black", size = 0.8),
                   axis.line.y = element_line(colour = "black", size = 0.8))
  
+          
+          ##!!!!!! Sub
+          Main = "TOP2A"
+          Sub_Name = "Patient1"
+          Sub = cds_Patient1
+          plot_cells(Sub, genes = Main, show_trajectory_graph = F,label_cell_groups = F
+                     ,cell_size =1 )+
+            scale_colour_gradient2(low = "black", mid = "#3528c7", high = "#ff85e9", 
+                                   guide = "colourbar",midpoint = 0, labs(fill ="Exp")) +
+            #            ggtitle(Main)+
+            ggtitle(paste0(Main,"(",Sub_Name,")"))+            
+            theme(axis.text.x = element_text(face="bold",  size=14),
+                  axis.text.y = element_text(face="bold",size=14),
+                  axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+                  axis.title = element_text(size = rel(1.5),face="bold"),
+                  plot.title = element_text(color="black", size=17, 
+                                            face="bold.italic",hjust = 0.1,vjust =-10), # margin = margin(t = 0.5, b = -7),
+                  #     plot.background = element_rect(fill = 'chartreuse'),
+                  legend.title = element_text(size=12, color = "black", face="bold"),
+                  legend.text = element_text(colour="black", size=12,face="bold"),
+                  legend.background = element_rect(fill = alpha("white", 0.5)),
+                  legend.position = c(0.1, 0.18),
+                  #     plot.text = element_text(size = 20),
+                  aspect.ratio=1) + #square plot
+            theme(axis.line.x = element_line(colour = "black", size = 0.8),
+                  axis.line.y = element_line(colour = "black", size = 0.8))
+          
+          
           #######   Cell cycle  #######           
           plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= "cell_cycle", 
                      label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1)  + 
@@ -496,7 +523,27 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                   axis.line.y = element_line(colour = "black", size = 0.6))
           
           
-          
+          ##!!!!!! Sub
+          Main = "TOP2A"
+          Sub_Name = "Patient1"
+          Sub = cds_Patient1
+          #######   Cell cycle  #######           
+          plot_cells(Sub, color_cells_by= "cell_cycle", 
+                     label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1)  + 
+            scale_color_manual(values = colors_cc)+
+            ggtitle(paste0("Cell cycle","(",Sub_Name,")"))+
+            theme(axis.text.x = element_text(face="bold",  size=14),
+                  axis.text.y = element_text(face="bold",size=14),
+                  axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+                  axis.title = element_text(size = rel(1.5),face="bold"),
+                  plot.title = element_text(color="black", size=17, 
+                                            face="bold.italic",hjust = 0.1,vjust =-7), # margin = margin(t = 0.5, b = -7),
+                  legend.title = element_text(size=12, color = "black", face="bold"),
+                  legend.text = element_text(colour="black", size=12,face="bold"),
+                  legend.position = c(0.1, 0.18),
+                  aspect.ratio=1) + #square plot
+            theme(axis.line.x = element_line(colour = "black", size = 0.8),
+                  axis.line.y = element_line(colour = "black", size = 0.8))
           
           #######   Recluster  #######           
           plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= "ReCluster", label_cell_groups=T,group_label_size = 4, 
