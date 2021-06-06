@@ -315,6 +315,61 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
 
     #************************************************************************************************************************#    
     #************************************************************************************************************************#    
+    ##################  Phenotype ##################
+    plot_cells(cds, color_cells_by= "Type", 
+               label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1)  + 
+#      scale_color_manual(values = colors_cc)+
+      ggtitle("Type")+
+      theme(axis.text.x = element_text(face="bold",  size=14),
+            axis.text.y = element_text(face="bold",size=14),
+            axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+            axis.title = element_text(size = rel(1.5),face="bold"),
+            plot.title = element_text(color="black", size=20, 
+                                      face="bold.italic",hjust = 0.1,vjust =-8), # margin = margin(t = 0.5, b = -7),
+            legend.title = element_text(size=12, color = "black", face="bold"),
+            legend.text = element_text(colour="black", size=12,face="bold"),
+            legend.position = c(0.1, 0.18),
+            aspect.ratio=1) + #square plot
+      theme(axis.line.x = element_line(colour = "black", size = 0.8),
+            axis.line.y = element_line(colour = "black", size = 0.8))
+
+    plot_cells(cds, color_cells_by= "Cell_type", 
+               label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1)  + 
+      #      scale_color_manual(values = colors_cc)+
+      ggtitle("Cell type")+
+      theme(axis.text.x = element_text(face="bold",  size=14),
+            axis.text.y = element_text(face="bold",size=14),
+            axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+            axis.title = element_text(size = rel(1.5),face="bold"),
+            plot.title = element_text(color="black", size=20, 
+                                      face="bold.italic",hjust = 0.1,vjust =-8), # margin = margin(t = 0.5, b = -7),
+            legend.title = element_text(size=12, color = "black", face="bold"),
+            legend.text = element_text(colour="black", size=12,face="bold"),
+          #  legend.position = c(0.1, 0.18),
+            aspect.ratio=1) + #square plot
+      theme(axis.line.x = element_line(colour = "black", size = 0.8),
+            axis.line.y = element_line(colour = "black", size = 0.8))
+    
+        
+    
+    plot_cells(cds, color_cells_by= "Patient", 
+               label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1)  + 
+      #      scale_color_manual(values = colors_cc)+
+      ggtitle("Patient")+
+      theme(axis.text.x = element_text(face="bold",  size=14),
+            axis.text.y = element_text(face="bold",size=14),
+            axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+            axis.title = element_text(size = rel(1.5),face="bold"),
+            plot.title = element_text(color="black", size=20, 
+                                      face="bold.italic",hjust = 0.1,vjust =-8), # margin = margin(t = 0.5, b = -7),
+            legend.title = element_text(size=12, color = "black", face="bold"),
+            legend.text = element_text(colour="black", size=12,face="bold"),
+          #  legend.position = c(0.1, 0.18),
+            aspect.ratio=1) + #square plot
+      theme(axis.line.x = element_line(colour = "black", size = 0.8),
+            axis.line.y = element_line(colour = "black", size = 0.8))
+    #************************************************************************************************************************#    
+    #************************************************************************************************************************#    
     
     ######################################  cds_subset ########################################
     ##################  Grab specific terms ################## 
@@ -418,7 +473,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
           ##!!! candidates14
           Main = candidates14
           plot_cells(cds_sub_AcinaDucT, genes = Main, show_trajectory_graph = F,label_cell_groups = F
-                     ,cell_size =1)+
+                     ,cell_size =0.5)+
             scale_colour_gradient2(low = "black", mid = "#3528c7", high = "#ff85e9", 
                                    guide = "colourbar",midpoint = 0, labs(fill ="Exp")) +
             #      ggtitle(Main)+
@@ -444,7 +499,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
           
           
           #######   Recluster  #######           
-          plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= "ReCluster", label_cell_groups=FALSE, 
+          plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= "ReCluster", label_cell_groups=T,group_label_size = 4, 
                      show_trajectory_graph = FALSE,cell_size = 1)  + 
 #            scale_color_manual(values = colors_cc)+
 #            ggtitle("cluster")+
@@ -591,6 +646,27 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
             theme(axis.line.x = element_line(colour = "black", size = 0.8),
                   axis.line.y = element_line(colour = "black", size = 0.8))
 
+          
+          
+          ### ATR 
+          plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+            scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                                   guide = "colourbar",midpoint = 0.12, labs(fill =  "Exp"))+
+            ggtitle(Marker_ATR_Name)+
+            theme(axis.text.x = element_text(face="bold",  size=14),
+                  axis.text.y = element_text(face="bold",size=14),
+                  axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+                  axis.title = element_text(size = rel(1.5),face="bold"),
+                  plot.title = element_text(color="black", size=20, 
+                                            face="bold.italic",hjust = 0.1,vjust =-10), # margin = margin(t = 0.5, b = -7),
+                  legend.title = element_text(size=12, color = "black", face="bold"),
+                  legend.text = element_text(colour="black", size=12,face="bold"),
+                  legend.position = c(0.1, 0.18),
+                  aspect.ratio=1) + #square plot
+            theme(axis.line.x = element_line(colour = "black", size = 0.8),
+                  axis.line.y = element_line(colour = "black", size = 0.8))
+          
+          
           
          ### Marker          
           plot_cells(cds_sub_AcinaDucT, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
