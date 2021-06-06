@@ -25,7 +25,7 @@ library(garnett)
 ############# Import files settings #############
   ## General setting
   PathName = setwd(getwd())
-  RVersion = "20210527V1"
+  RVersion = "20210606V1"
   dir.create(paste0(PathName,"/",RVersion))
   
   ## Marker genes file
@@ -67,7 +67,9 @@ library(garnett)
   Regulators= c("TP53","YBX1","E2F1")
   
   ## Color setting
-  colors_cc <- c("#FF9912B3", "#32CD3299", "#4169E1B3") ## Color for Cell-Cycle
+  colors_cc <- c("#59c26b", "#2e6087", "#417034") ## Color for Cell-Cycle
+  colors_cc2 <- c("#FF59c26b", "#FF2e6087", "#FF417034") ## Color for Cell-Cycle
+ # colors_cc <- c("#FF9912B3", "#32CD3299", "#4169E1B3") ## Color for Cell-Cycle
   
   ## Format of data
   GeneNAFMT <- c("HuGSymbol") # Gene names format of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
@@ -198,6 +200,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     
         ####################    Cell discrimination by AddModuleScore    ####################
         getFilePath("Monocle3_AddModuleScore.R")
+        set.seed(1) # Fix the seed
         
         Marker_PDAC_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
         Marker_PDAC_Name <- c("PDAC")
@@ -214,12 +217,12 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                    scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
                                           guide = "colourbar",midpoint = 0.2, labs(fill = Marker_EMT_Name))
 
-        Marker_ChroSt_file_Name <- c("HP_ABNORMALITY_OF_CHROMOSOME_STABILITY")
-        Marker_ChroSt_Name <- c("CST")
-        cds <- Monocle3_AddModuleScore(Marker_ChroSt_file_Name,Marker_ChroSt_Name,marrow,cds)
-        plot_cells(cds, color_cells_by= Marker_ChroSt_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+        Marker_ACST_file_Name <- c("HP_ABNORMALITY_OF_CHROMOSOME_STABILITY")
+        Marker_ACST_Name <- c("ACST")
+        cds <- Monocle3_AddModuleScore(Marker_ACST_file_Name,Marker_ACST_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_ACST_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
                    scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ChroSt_Name))
+                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ACST_Name))
 
         Marker_Mig_file_Name <- c("GOBP_POSITIVE_REGULATION_OF_EPITHELIAL_CELL_MIGRATION")
         Marker_Mig_Name <- c("Migration")
@@ -234,7 +237,36 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
         plot_cells(cds, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
                    scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
                                           guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
- 
+
+        Marker_NE_file_Name <- c("REACTOME_INITIATION_OF_NUCLEAR_ENVELOPE_NE_REFORMATION")
+        Marker_NE_Name <- c("NE")
+        cds <- Monocle3_AddModuleScore(Marker_NE_file_Name,Marker_NE_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_NE_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+          scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                 guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NE_Name))
+       
+        Marker_NP_file_Name <- c("REACTOME_NUCLEAR_PORE_COMPLEX_NPC_DISASSEMBLY")
+        Marker_NP_Name <- c("NP")
+        cds <- Monocle3_AddModuleScore(Marker_NP_file_Name,Marker_NP_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_NP_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+          scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                 guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NP_Name))
+
+        
+        Marker_ATR_file_Name <- c("REACTOME_ACTIVATION_OF_ATR_IN_RESPONSE_TO_REPLICATION_STRESS")
+        Marker_ATR_Name <- c("ATR")
+        cds <- Monocle3_AddModuleScore(Marker_ATR_file_Name,Marker_ATR_Name,marrow,cds)
+        plot_cells(cds, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+          scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                 guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ATR_Name))
+        
+        # Marker_G0G1_file_Name <- c("REACTOME_G0_AND_EARLY_G1")
+        # Marker_G0G1_Name <- c("G0G1")
+        # cds <- Monocle3_AddModuleScore(Marker_G0G1_file_Name,Marker_G0G1_Name,marrow,cds)
+        # plot_cells(cds, color_cells_by= Marker_G0G1_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+        #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+        #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_G0G1_Name))
+         
         ####################   Cell discrimination by Garnett  ####################
         Human_classifier_cds <- train_cell_classifier(cds = cds,
                                                   marker_file = Garnett_Marker_file,   # Import the marker_file
@@ -290,6 +322,12 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
         ########################  AcinaDucT (choose_cells) ##########################
                 cds_sub_AcinaDucT <- choose_cells(cds)
                 plot_cells(cds_sub_AcinaDucT, color_cells_by="cluster", show_trajectory_graph = F)
+                
+                plot_cells(cds_sub_AcinaDucT , genes=c(Main_Group), show_trajectory_graph = FALSE) #ok
+                plot_cells(cds_sub_AcinaDucT , genes=c("H2AX"), cell_size = 0.8,show_trajectory_graph = FALSE,label_cell_groups=FALSE) #ok
+                plot_cells(cds_sub_AcinaDucT , genes=c("EXO1"), cell_size = 0.8,show_trajectory_graph = FALSE,label_cell_groups=FALSE) #ok
+                plot_cells(cds_sub_AcinaDucT , genes=c("MYC"), cell_size = 0.8,show_trajectory_graph = FALSE,label_cell_groups=FALSE) #ok
+                
                 
                 set.seed(1) # Fix the seed
                 cds_sub_AcinaDucT_NewK <- cluster_cells(cds_sub_AcinaDucT,k = k_cds_sub_AcinaDucT, resolution=1e-5)
@@ -370,7 +408,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 ############    Find marker genes expressed by each cluster (AcinaDucT)   ############
                 set.seed(1) # Fix the seed
                 marker_test_res_AcinaDucT <- top_markers(cds_sub_AcinaDucT_NewK_ReCluster,
-                                                         genes_to_test_per_group = 25, group_cells_by="ReCluster")
+                                                         genes_to_test_per_group = 50, group_cells_by="ReCluster")
                 
                 top_specific_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(fraction_expressing >= 0.10) %>%
                                                   group_by(cell_group) %>% top_n(10, pseudo_R2)
@@ -391,7 +429,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 
                 ## Export a marker genes information file
                 write.table(marker_test_res_AcinaDucT, file=paste0(PathName,"/",RVersion,"/",RVersion,"_", 
-                                                               "AcinaDucT_marker_test_res_GPG25.txt"),  sep="\t", row.names=FALSE)
+                                                               "AcinaDucT_marker_test_res_GPG50.txt"),  sep="\t", row.names=FALSE)
                 
                 ## Generate a Garnett file
                 # Require that markers have at least JS specificty score > 0.1 and be significant in the logistic test for identifying their cell type:
@@ -404,13 +442,14 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 #   filter(n() == 1)
                 
                 generate_garnett_marker_file(garnett_markers_AcinaDucT,max_genes_per_group = 100, 
-                                             file=paste0(PathName,"/",RVersion,"/",RVersion,"_","AcinaDucT_marker_Garnett_GPG25_q005spe01.txt"))
+                                             file=paste0(PathName,"/",RVersion,"/",RVersion,"_","AcinaDucT_marker_Garnett_GPG50_q005spe01.txt"))
                 
 
                 ################ Plot Cell-Cycle Scoring and Regression (AcinaDucT) ################ 
                 ## Convert Monocle3 Object to Seurat Object    # getFilePath("Monocle3_To_Seurat.R")
                 marrow_sub_AcinaDucT_NewK_ReCluster <- Monocle3_To_Seurat(cds_sub_AcinaDucT_NewK_ReCluster,"sub_AcinaDucT") #sub_DT2TOP2ACTR:sub_DucT2_TOP2ACenter
                 
+                  
                 ###### Insert the cell cycle results from Monocle3 cds_sub into the  Seurat  marrow_sub ######
                 marrow_sub_AcinaDucT_NewK_ReCluster@active.ident <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData$cell_cycle
                 RidgePlot(marrow_sub_AcinaDucT_NewK_ReCluster,cols = colors_cc, features = c(Main_Group), ncol = 2)
@@ -425,7 +464,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = F)+ scale_fill_manual(values = colors_cc)
                 plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
                 plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-                  geom_boxplot(width=0.1, fill="white") + theme(axis.text.x=element_text(angle=45, hjust=1))
+                  geom_boxplot(width=0.1, fill="white", alpha = 0.7) + theme(axis.text.x=element_text(angle=45, hjust=1))
                 
                 
                 ############    Plot Cell discrimination by AddModuleScore (AcinaDucT)   ############
@@ -449,7 +488,22 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
         
-               
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NE_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NE_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NP_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NP_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ATR_Name))
+                
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ACST_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ACST_Name))
+                
                ####################### Constructing single-cell trajectories (AcinaDucT) #######################
                cds3 <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_set' objects
                cds3 <- estimate_size_factors(cds3) # issues with cds object in monocle3 #54 # https://github.com/satijalab/seurat-wrappers/issues/54
@@ -490,7 +544,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                           label_cell_groups=FALSE, label_leaves=FALSE, label_branch_points=FALSE, graph_label_size=1.5)
                
                ######   PCA for trajectories
-               for (i in c(4:4)) {
+               for (i in c(8:8)) {
                  
                  cds_sub_DucT2_TOP2ACenter_Tn <- choose_graph_segments(cds_sub_AcinaToDucT2 ,clear_cds = FALSE)
                  plot_cells(cds_sub_DucT2_TOP2ACenter_Tn, color_cells_by="cluster",cell_size=2, 
@@ -517,6 +571,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                  rm(cds_sub_DucT2_TOP2ACenter_Tn,marrow_sub_DucT2_TOP2ACenter_Tn)
                }
                
+               cds_sub_DucT2_TOP2ACenter_T4@rowRanges@elementMetadata@listData$gene_short_name <- cds_sub_DucT2_TOP2ACenter_T4@assays@data@listData[["counts"]]@Dimnames[[1]]
                
                plot_cells(cds_sub_DucT2_TOP2ACenter_T4, label_cell_groups=FALSE, show_trajectory_graph = T)
                
@@ -620,7 +675,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T) +
                   scale_fill_manual(values = colors_cc) + theme(axis.text.x=element_text(angle=45, hjust=1))
                 plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-                  geom_boxplot(width=0.1, fill="white") + theme(axis.text.x=element_text(angle=45, hjust=1))
+                  geom_boxplot(width=0.1, fill="white",alpha=(0.7)) + theme(axis.text.x=element_text(angle=45, hjust=1))
                 
                 ## Plot pseudotime
                 MainGroup_lineage_sub_DT2TOP2ACTR <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main_Group]
