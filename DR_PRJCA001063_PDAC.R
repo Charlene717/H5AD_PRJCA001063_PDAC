@@ -116,7 +116,6 @@ seuratObject <- LoadH5Seurat(paste0(PathName,"/PRJCA001063.h5seurat")) # This .d
 ## Convert Seurat Object to Monocle3 Object
 library(SeuratWrappers)
 cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_set' objects
-
 #---------------------------------------------------------------------------------------------------------------------#
 
     ############# Run Monocle3 #############
@@ -467,58 +466,140 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                   geom_boxplot(width=0.1, fill="white", alpha = 0.7) + theme(axis.text.x=element_text(angle=45, hjust=1))
                 
                 
-                ############    Plot Cell discrimination by AddModuleScore (AcinaDucT)   ############
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                           scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
-                                                 guide = "colourbar",midpoint = 0.2, labs(fill = Marker_PDAC_Name))
+                # ############    Plot Cell discrimination by AddModuleScore (AcinaDucT)   ############
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #            scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                #                                  guide = "colourbar",midpoint = 0.2, labs(fill = Marker_PDAC_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_EMT_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                #                          guide = "colourbar",midpoint = 0.2, labs(fill = Marker_EMT_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ChroSt_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ChroSt_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Mig_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Mig_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NE_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NE_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NP_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NP_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ATR_Name))
+                # 
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ACST_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ACST_Name))
                 
+                ####################    Cell discrimination by AddModuleScore (AcinaDucT)    ####################
+                getFilePath("Monocle3_AddModuleScore.R")
+                set.seed(1) # Fix the seed
+                
+                Marker_PDAC_file_Name <- c("GRUETZMANN_PANCREATIC_CANCER_UP")
+                Marker_PDAC_Name <- c("PDAC")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_PDAC_file_Name,Marker_PDAC_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_PDAC_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
+                                         guide = "colourbar",midpoint = 0.2, labs(fill = Marker_PDAC_Name))
+                
+                Marker_EMT_file_Name <- c("HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION")
+                Marker_EMT_Name <- c("EMT")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_EMT_file_Name,Marker_EMT_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
                 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_EMT_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
                   scale_colour_gradient2(low = "#440075", mid = "#ffd261", high = "#4aff8c", 
                                          guide = "colourbar",midpoint = 0.2, labs(fill = Marker_EMT_Name))
                 
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ChroSt_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ChroSt_Name))
-                
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Mig_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Mig_Name))
-                
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
-        
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NE_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NE_Name))
-                
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NP_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NP_Name))
-                
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
-                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
-                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ATR_Name))
-                
+                Marker_ACST_file_Name <- c("HP_ABNORMALITY_OF_CHROMOSOME_STABILITY")
+                Marker_ACST_Name <- c("ACST")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_ACST_file_Name,Marker_ACST_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
                 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ACST_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
                   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ACST_Name))
                 
+                Marker_Mig_file_Name <- c("GOBP_POSITIVE_REGULATION_OF_EPITHELIAL_CELL_MIGRATION")
+                Marker_Mig_Name <- c("Migration")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_Mig_file_Name,Marker_Mig_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Mig_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Mig_Name))
+                
+                Marker_Meta_file_Name <- c("NAKAMURA_METASTASIS_MODEL_UP")
+                Marker_Meta_Name <- c("Metastasis")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_Meta_file_Name,Marker_Meta_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_Meta_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_Meta_Name))
+                
+                Marker_NE_file_Name <- c("REACTOME_INITIATION_OF_NUCLEAR_ENVELOPE_NE_REFORMATION")
+                Marker_NE_Name <- c("NE")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_NE_file_Name,Marker_NE_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NE_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NE_Name))
+                
+                Marker_NP_file_Name <- c("REACTOME_NUCLEAR_PORE_COMPLEX_NPC_DISASSEMBLY")
+                Marker_NP_Name <- c("NP")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_NP_file_Name,Marker_NP_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NP_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NP_Name))
+                
+                
+                Marker_ATR_file_Name <- c("REACTOME_ACTIVATION_OF_ATR_IN_RESPONSE_TO_REPLICATION_STRESS")
+                Marker_ATR_Name <- c("ATR")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_ATR_file_Name,Marker_ATR_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ATR_Name))
+                
+                # Marker_G0G1_file_Name <- c("REACTOME_G0_AND_EARLY_G1")
+                # Marker_G0G1_Name <- c("G0G1")
+                # cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_G0G1_file_Name,Marker_G0G1_Name,
+                #                                                             marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                # plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_G0G1_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                #   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                #                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_G0G1_Name))
+                
+                
                ####################### Constructing single-cell trajectories (AcinaDucT) #######################
-               cds3 <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_set' objects
-               cds3 <- estimate_size_factors(cds3) # issues with cds object in monocle3 #54 # https://github.com/satijalab/seurat-wrappers/issues/54
-               
-               ## Pre-process the data 
-               cds3 <- preprocess_cds(cds3, num_dim = 100)
-               plot_pc_variance_explained(cds3)
-               
-               ## Reduce dimensionality and visualize the cells
-               
-               ## UMAP
-               cds3 <- reduce_dimension(cds3,preprocess_method = 'PCA')
-               plot_cells(cds3)
-               
-               cds_sub_AcinaDucT2 <- choose_cells(cds3)
+               # set.seed(1) # Fix the seed
+               #  
+               # cds3 <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_set' objects
+               # cds3 <- estimate_size_factors(cds3) # issues with cds object in monocle3 #54 # https://github.com/satijalab/seurat-wrappers/issues/54
+               # 
+               # ## Pre-process the data 
+               # cds3 <- preprocess_cds(cds3, num_dim = 100)
+               # plot_pc_variance_explained(cds3)
+               # 
+               # ## Reduce dimensionality and visualize the cells
+               # 
+               # ## UMAP
+               # cds3 <- reduce_dimension(cds3,preprocess_method = 'PCA')
+               # plot_cells(cds3)
+               # cds_sub_AcinaDucT2 <- choose_cells(cds3)
+                
+               cds_sub_AcinaDucT2 <- choose_cells(cds2)
                cds_sub_AcinaDucT2 <- cluster_cells(cds_sub_AcinaDucT2)
                cds_sub_AcinaDucT2 <- learn_graph(cds_sub_AcinaDucT2, use_partition = F)
                plot_cells(cds_sub_AcinaDucT2,
