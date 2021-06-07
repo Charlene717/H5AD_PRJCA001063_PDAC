@@ -50,6 +50,23 @@ plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_subset, group_cells_by="Cell_
 plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_subset, group_cells_by="ReCluster", ncol=2) +
   theme(axis.text.x=element_text(angle=45, hjust=1))
 
+cds_sub_AcinaDucT_NewK_ReCluster_subset_CGAS <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% "CGAS",]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_subset_CGAS, group_cells_by="ReCluster", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+
+cds_sub_AcinaDucT_NewK_ReCluster_subset_H2AX <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% "H2AX",]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_subset_H2AX, group_cells_by="ReCluster", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+
+cds_sub_AcinaDucT_NewK_ReCluster_subset_PTK2 <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% "PTK2",]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_subset_PTK2, group_cells_by="ReCluster", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+
+cds_sub_AcinaDucT_NewK_ReCluster_subset_TP53 <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% "TP53",]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_subset_TP53, group_cells_by="ReCluster", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+
+
 # grab MDC00
 cds_sub_AcinaDucT_NewK_ReCluster_MDC00 <- cds_sub_AcinaDucT_NewK_ReCluster[,grepl("MDC00", colData(cds_sub_AcinaDucT_NewK_ReCluster_subset)$ReCluster, ignore.case=TRUE)]
 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster_MDC00 , color_cells_by="cell_cycle", 
