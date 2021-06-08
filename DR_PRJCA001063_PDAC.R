@@ -325,7 +325,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 ############    Find marker genes expressed by each cluster (AcinaDucT)   ############
                 set.seed(1) # Fix the seed
                 marker_test_res_AcinaDucT <- top_markers(cds_sub_AcinaDucT_NewK_ReCluster,
-                                                         genes_to_test_per_group = 50, group_cells_by="ReCluster")
+                                                         genes_to_test_per_group = 25, group_cells_by="ReCluster")
                 
                 top_specific_markers_AcinaDucT <- marker_test_res_AcinaDucT %>% filter(fraction_expressing >= 0.10) %>%
                                                   group_by(cell_group) %>% top_n(10, pseudo_R2)
