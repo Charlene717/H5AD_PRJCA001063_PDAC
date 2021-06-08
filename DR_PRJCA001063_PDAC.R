@@ -256,63 +256,63 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type <- 
                         as.character(clusters(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster)])
                 colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type <- 
-                        dplyr::recode(colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type,
-                                                                        "6"="AC",
-                                      
-                                                                        "24"="nAtD",
-                                                                        "29"="nAtD",
-                                      
-                                                                        "14"="aAtD",
-                                      
-                                                                        "8"="ND01",
-                                                                        "1"="ND02",
-                                                                        "3"="ND03",
-                                                                        "13"="ND04",
-                                      
-                                                                        "2"="AD",
-                                      
-                                                                        "28"="MD00",
-                                      
-                                                                        "18"="MDC01",
-                                                                        "26"="MDC02",
-                                                                     #  "?" ="MDC03",
-                                                                        "4"="MDC00",
-                                                                        "19"="MDC04",
-                                                                        "9"="MDC05",
-                                                                        "16"="MDC06",
-                                                                        "15"="MDC07",
-                                                                     #  "?" ="MDC08",
-                                      
-                                                                        "11"="MDO01",
-                                                                        "25"="MDO02",
-                                                                        "30"="MDO02",
-                                                                        "22"="MDO03",
-                                                                        "12"="MDO04",
-                                                                        "21"="MDO05",
-                                                                        "10"="MDO06",
-                                                                        "17"="MDO07",
-                                                                        "27"="MDO07",
-                                                                        "7"="MDO08",
-                                                                        "23"="MDO09",
-                                                                        "5"="MDO10",
-                                                                        "20"="MDO11")
+                  dplyr::recode(colData(cds_sub_AcinaDucT_NewK_ReCluster)$assigned_cell_type,
+                                                                          "6"="AC",
+                                                                          
+                                                                          "24"="nAtD",
+                                                                          "29"="nAtD",
+                                                                          
+                                                                          "14"="aAtD",
+                                                                          
+                                                                          "8"="ND01",
+                                                                          "1"="ND02",
+                                                                          "3"="ND03",
+                                                                          "13"="ND04",
+                                                                          
+                                                                          "2"="AD",
+                                                                          
+                                                                          "28"="CDOri",
+                                                                          
+                                                                          "18"="CoreCD01",
+                                                                          "26"="CoreCD02",
+                                                                          #  "?" ="CoreCD03",
+                                                                          "4"="CoreCD00",
+                                                                          "19"="CoreCD04",
+                                                                          "9"="CoreCD05",
+                                                                          "16"="CoreCD06",
+                                                                          "15"="CoreCD07",
+                                                                          #  "?" ="CoreCD08",
+                                                                          
+                                                                          "11"="DistalCD01",
+                                                                          "25"="DistalCD02",
+                                                                          "30"="DistalCD02",
+                                                                          "22"="DistalCD03",
+                                                                          "12"="DistalCD04",
+                                                                          "21"="DistalCD05",
+                                                                          "10"="DistalCD06",
+                                                                          "17"="DistalCD07",
+                                                                          "27"="DistalCD07",
+                                                                          "7"="DistalCD08",
+                                                                          "23"="DistalCD09",
+                                                                          "5"="DistalCD10",
+                                                                          "20"="DistalCD11")
                 
                 
                 cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["assigned_cell_type"]]
                 
-                ## MDC03
-                cds_sub_AcinaDucT_NewK_ReCluster_MDC03 <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
-                colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC03)$assigned_cell_type <- "MDC03"
-                cds_sub_AcinaDucT_NewK_ReCluster_MDC03@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster_MDC03@colData@listData[["assigned_cell_type"]]
+                ## CoreCD03
+                cds_sub_AcinaDucT_NewK_ReCluster_CoreCD03 <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
+                colData(cds_sub_AcinaDucT_NewK_ReCluster_CoreCD03)$assigned_cell_type <- "CoreCD03"
+                cds_sub_AcinaDucT_NewK_ReCluster_CoreCD03@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster_CoreCD03@colData@listData[["assigned_cell_type"]]
                 
-                ## MDC08
-                cds_sub_AcinaDucT_NewK_ReCluster_MDC08 <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
-                colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC08)$assigned_cell_type <- "MDC08"
-                cds_sub_AcinaDucT_NewK_ReCluster_MDC08@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster_MDC08@colData@listData[["assigned_cell_type"]]
+                ## CoreCD08
+                cds_sub_AcinaDucT_NewK_ReCluster_CoreCD08 <- choose_cells(cds_sub_AcinaDucT_NewK_ReCluster)
+                colData(cds_sub_AcinaDucT_NewK_ReCluster_CoreCD08)$assigned_cell_type <- "CoreCD08"
+                cds_sub_AcinaDucT_NewK_ReCluster_CoreCD08@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster_CoreCD08@colData@listData[["assigned_cell_type"]]
                 
                 
-                colData(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster_MDC03),]$assigned_cell_type <- colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC03)$assigned_cell_type
-                colData(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster_MDC08),]$assigned_cell_type <- colData(cds_sub_AcinaDucT_NewK_ReCluster_MDC08)$assigned_cell_type
+                colData(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster_CoreCD03),]$assigned_cell_type <- colData(cds_sub_AcinaDucT_NewK_ReCluster_CoreCD03)$assigned_cell_type
+                colData(cds_sub_AcinaDucT_NewK_ReCluster)[colnames(cds_sub_AcinaDucT_NewK_ReCluster_CoreCD08),]$assigned_cell_type <- colData(cds_sub_AcinaDucT_NewK_ReCluster_CoreCD08)$assigned_cell_type
                 
                 cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ReCluster"]] <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["assigned_cell_type"]]
                 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by = "ReCluster",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
