@@ -43,8 +43,9 @@ library(garnett)
   candidates14 = c("BRIP1","KIF23","TOP2A","FOSL1","FAM25A","ANLN","NCAPH","KRT9","MCM4","CKAP2L","CENPE","RACGAP1","DTL","RAD51AP1")
   
   ## Color setting
-  colors_cc <- c("#59c26b", "#2e6087", "#417034") ## Color for Cell-Cycle
-  colors_cc2 <- c("#FF59c26b", "#FF2e6087", "#FF417034") ## Color for Cell-Cycle
+  colors_cc <-c("#FF9912B3", "#2e6087", "#417034")  ## Color for Cell-Cycle
+  colors_cc2 <- c("#59c26b", "#2e6087", "#417034") ## Color for Cell-Cycle
+  colors_ccOri <- c("#FF9912B3", "#32CD3299", "#4169E1B3") ## Color for Cell-Cycle
 
   ## Format of data
   GeneNAFMT <- c("HuGSymbol") # Gene names format of data: HuGSymbol,MouGSymbol,HuENSEMBL,MouENSEMBL
@@ -167,7 +168,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
         plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE)+ scale_fill_manual(values = colors_cc)
         plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
         plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-                         geom_boxplot(width=0.1, fill="white") + theme(axis.text.x=element_text(angle=45, hjust=1))
+                         geom_boxplot(width=0.1, fill="white",alpha = 0.7) + theme(axis.text.x=element_text(angle=45, hjust=1))
         
 
     ##############  Annotate your cells according to type (Custom Marker)  ##############
