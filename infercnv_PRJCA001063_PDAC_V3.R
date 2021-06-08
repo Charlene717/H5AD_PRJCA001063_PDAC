@@ -7,7 +7,7 @@ library(infercnv)
 ############# Read file settings #############
 
 PathName = setwd(getwd())
-RVersion = "20210528V1"
+RVersion = "20210608V1"
 dir.create(paste0(PathName,"/",RVersion))
 
 
@@ -119,7 +119,8 @@ infercnv_obj = CreateInfercnvObject(raw_counts_matrix= tttExpression3,
                                     annotations_file= tttCT5,
                                     #        delim="\t",
                                     gene_order_file=system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
-                                    ref_group_names=c("AC","ND01"))
+                                    ref_group_names=c("AC"))
+                                    #ref_group_names=c("AC","ND01"))
 # no inference
 # infercnv_obj@reference_grouped_cell_indices[["Acinar cell"]] <- as.integer(infercnv_obj@reference_grouped_cell_indices[["Acinar cell"]])
 
@@ -141,7 +142,7 @@ infercnv_obj = CreateInfercnvObject(raw_counts_matrix= tttExpression3,
 # )
 
 infercnv_obj = infercnv::run(infercnv_obj,
-                             cutoff=1,  # use 1 for smart-seq, 0.1 for 10x-genomics
+                             cutoff=0.1,  # use 1 for smart-seq, 0.1 for 10x-genomics
                              #  out_dir= "output_dir",
                              out_dir=tempfile(), 
                              cluster_by_groups=TRUE,
