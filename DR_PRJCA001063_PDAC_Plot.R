@@ -41,7 +41,8 @@ library(garnett)
   
   ## Color setting
   colors_cc <- c("#FF9912B3", "#32CD3299", "#4169E1B3") ## Color for Cell-Cycle
-
+  colors_cc2 <- c("#FF59c26b", "#FF2e6087", "#FF417034") ## Color for Cell-Cycle
+  
     
 ########## Save the Figures ##########
     ##### Save as png #####
@@ -225,9 +226,29 @@ library(garnett)
                   axis.line.y = element_line(colour = "black", size = 0.8))
           
           
-          #######   Cell cycle  #######           
+          #######   Cell cycle  #######   
+          colors_cc <-c("#FF9912B3", "#2e6087", "#417034")  ## Color for Cell-Cycle
+          ## AcinaDucT
           plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= "cell_cycle", 
                      label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1)  + 
+            scale_color_manual(values = colors_cc)+
+            ggtitle("Cell cycle")+
+            theme(axis.text.x = element_text(face="bold",  size=14),
+                  axis.text.y = element_text(face="bold",size=14),
+                  axis.line = element_line(colour = "darkblue", size = 2, linetype = "solid"),
+                  axis.title = element_text(size = rel(1.5),face="bold"),
+                  plot.title = element_text(color="black", size=20, 
+                                            face="bold.italic",hjust = 0.1,vjust =-10), # margin = margin(t = 0.5, b = -7),
+                  legend.title = element_text(size=12, color = "black", face="bold"),
+                  legend.text = element_text(colour="black", size=12,face="bold"),
+                  legend.position = c(0.1, 0.18),
+                  aspect.ratio=1) + #square plot
+            theme(axis.line.x = element_line(colour = "black", size = 0.8),
+                  axis.line.y = element_line(colour = "black", size = 0.8))
+          
+          ## DucT2_TOP2ACente
+          plot_cells(cds_sub_DucT2_TOP2ACenter, color_cells_by= "cell_cycle", 
+                     label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 2)  + 
             scale_color_manual(values = colors_cc)+
             ggtitle("Cell cycle")+
             theme(axis.text.x = element_text(face="bold",  size=14),
