@@ -1,18 +1,52 @@
 ##### geom_violin()
 ##### https://zhuanlan.zhihu.com/p/148189818
+
+memory.limit(150000)
+
+colors_cc <-c("#FF9912B3", "#2e6087", "#417034")  ## Color for Cell-Cycle
+
+
+## Markers
 PDAC <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["PDAC"]]
 EMT <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["EMT"]]
-NP <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["NP"]]
+NPC <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["NPC"]]
 NE <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["NE"]]
 ATR <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ATR"]]
 Migration <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["Migration"]]
 Metastasis <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["Metastasis"]]
 ACST <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ACST"]]
 
+##
 ReCluster <- as.character(cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["ReCluster"]])
 Cell_cycle <- as.character(cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["cell_cycle"]])
 
-## PDAC
+## Genes
+# PTK2
+ciliated_genes_PTK2 <- c("PTK2")
+cds_sub_AcinaDucT_NewK_ReCluster_PTK2 <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_PTK2,]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_PTK2, group_cells_by="cell_cycle", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+PTK2 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_PTK2@assays@data@listData[["counts"]])
+# PTK2 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_PTK2@assays@data@listData[["logcounts"]])
+
+# TOP2A
+ciliated_genes_TOP2A <- c("TOP2A")
+cds_sub_AcinaDucT_NewK_ReCluster_TOP2A <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_TOP2A,]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A, group_cells_by="cell_cycle", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+TOP2A <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@assays@data@listData[["counts"]])
+# TOP2A <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@assays@data@listData[["logcounts"]])
+
+# CGAS
+ciliated_genes_CGAS <- c("CGAS")
+cds_sub_AcinaDucT_NewK_ReCluster_CGAS <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_CGAS,]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_CGAS, group_cells_by="cell_cycle", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+CGAS <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_CGAS@assays@data@listData[["counts"]])
+
+## \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+## Markers ##******************************************************************************************************************************
+## PDAC ##--------------------------------------------------------------------------------------------------------------------
 PDAC_Sum <- as.data.frame(cbind(PDAC,ReCluster))
 #!!! We need to trans the factor to numeric in here
 PDAC_Sum$PDAC <- as.numeric(PDAC_Sum$PDAC)
@@ -24,8 +58,21 @@ ggplot_PDAC  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_PDAC + geom_violin(trim = FALSE) +
               stat_summary(fun= mean, geom = "point",
               shape = 23, size = 2, color = "blue")
+## PDAC Cell cycle
+PDAC_Sum_CC <- as.data.frame(cbind(PDAC,ReCluster,Cell_cycle))
+#!!! We need to trans the factor to numeric in here
+PDAC_Sum_CC$PDAC <- as.numeric(PDAC_Sum_CC$PDAC)
 
-## EMT
+ggplot_PDAC_CC <- ggplot(data =PDAC_Sum_CC, aes(x = ReCluster, y = PDAC, fill =Cell_cycle))
+ggplot_PDAC_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+## EMT ##--------------------------------------------------------------------------------------------------------------------
 EMT_Sum <- as.data.frame(cbind(EMT,ReCluster))
 #!!! We need to trans the factor to numeric in here
 EMT_Sum$EMT <- as.numeric(EMT_Sum$EMT)
@@ -38,12 +85,26 @@ ggplot_EMT + geom_violin(trim = FALSE) +
              stat_summary(fun= mean, geom = "point",
              shape = 23, size = 2, color = "blue")
 
-## NP
-NP_Sum <- as.data.frame(cbind(NP,ReCluster))
+## EMT Cell cycle
+EMT_Sum_CC <- as.data.frame(cbind(EMT,ReCluster,Cell_cycle))
 #!!! We need to trans the factor to numeric in here
-NP_Sum$NP <- as.numeric(NP_Sum$NP)
+EMT_Sum_CC$EMT <- as.numeric(EMT_Sum_CC$EMT)
 
-ggplot_NP <- ggplot(data =NP_Sum, aes(x = ReCluster, y = NP, fill =ReCluster))
+ggplot_EMT_CC <- ggplot(data =EMT_Sum_CC, aes(x = ReCluster, y = EMT, fill =Cell_cycle))
+ggplot_EMT_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+## NP ##--------------------------------------------------------------------------------------------------------------------
+NP_Sum <- as.data.frame(cbind(NPC,ReCluster))
+#!!! We need to trans the factor to numeric in here
+NP_Sum$NPC <- as.numeric(NP_Sum$NPC)
+
+ggplot_NP <- ggplot(data =NP_Sum, aes(x = ReCluster, y = NPC, fill =ReCluster))
 ggplot_NP 
 ggplot_NP  + geom_violin()
 ggplot_NP  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
@@ -51,7 +112,42 @@ ggplot_NP + geom_violin(trim = FALSE) +
             stat_summary(fun= mean, geom = "point",
             shape = 23, size = 2, color = "blue")
 
-## NE
+## NP PTK2 ## error
+NP_Sum_PTK2 <- as.data.frame(cbind(NPC,ReCluster,t(PTK2)))
+#!!! We need to trans the factor to numeric in here
+NP_Sum_PTK2$NPC <- as.numeric(NP_Sum_PTK2$NPC)
+#NP_Sum_PTK2$PTK2 <- as.factor(NP_Sum_PTK2$PTK2)
+NP_Sum_PTK2$PTK2 <- as.numeric(NP_Sum_PTK2$PTK2)
+
+ggplot_NP <- ggplot(data =NP_Sum_PTK2, aes(x = ReCluster, y = NPC, fill =PTK2))
+ggplot_NP 
+ggplot_NP  + geom_violin(aes(fill=PTK2))
+ggplot_NP  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
+ggplot_NP + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+## NPC Cell cycle
+NP_Sum_CC <- as.data.frame(cbind(NPC,ReCluster,Cell_cycle))
+#!!! We need to trans the factor to numeric in here
+NP_Sum_CC$NPC <- as.numeric(NP_Sum_CC$NPC)
+
+ggplot_NP_CC <- ggplot(data =NP_Sum_CC, aes(x = ReCluster, y = NPC, fill =Cell_cycle))
+ggplot_NP_CC 
+
+ggplot_NP_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+          #      labs(title = "NPC")+
+                theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                     size=10, angle=45),
+                     axis.text.y = element_text(face="bold"),
+                     axis.title.x = element_text(size = 14,face="bold"),
+                     axis.title.y = element_text(size = 14,face="bold"))
+
+ggplot_NP_CC  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
+ggplot_NP_CC + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+
+## NE  ##--------------------------------------------------------------------------------------------------------------------
 NE_Sum <- as.data.frame(cbind(NE,ReCluster))
 #!!! We need to trans the factor to numeric in here
 NE_Sum$NE <- as.numeric(NE_Sum$NE)
@@ -61,10 +157,25 @@ ggplot_NE
 ggplot_NE  + geom_violin()
 ggplot_NE  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_Ne + geom_violin(trim = FALSE) +
-            stat_summary(fun= mean, geom = "point",
-            shape = 23, size = 2, color = "blue")
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
 
-## ATR
+## NE Cell cycle
+NE_Sum_CC <- as.data.frame(cbind(NE,ReCluster,Cell_cycle))
+#!!! We need to trans the factor to numeric in here
+NE_Sum_CC$NE <- as.numeric(NE_Sum_CC$NE)
+
+ggplot_NE_CC <- ggplot(data =NE_Sum_CC, aes(x = ReCluster, y = NE, fill =Cell_cycle))
+ggplot_NE_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+
+## ATR ##--------------------------------------------------------------------------------------------------------------------
 ATR_Sum <- as.data.frame(cbind(ATR,ReCluster))
 #!!! We need to trans the factor to numeric in here
 ATR_Sum$ATR <- as.numeric(ATR_Sum$ATR)
@@ -74,10 +185,10 @@ ggplot_ATR
 ggplot_ATR  + geom_violin()
 ggplot_ATR  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_ATR + geom_violin(trim = FALSE) +
-                   stat_summary(fun= mean, geom = "point",
-                   shape = 23, size = 2, color = "blue")
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
 
-## Migration
+## Migration ##--------------------------------------------------------------------------------------------------------------------
 Migration_Sum <- as.data.frame(cbind(Migration,ReCluster))
 #!!! We need to trans the factor to numeric in here
 Migration_Sum$Migration <- as.numeric(Migration_Sum$Migration)
@@ -87,10 +198,24 @@ ggplot_Migration
 ggplot_Migration  + geom_violin()
 ggplot_Migration  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_Migration + geom_violin(trim = FALSE) +
-                   stat_summary(fun= mean, geom = "point",
-                   shape = 23, size = 2, color = "blue")
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
 
-## Metastasis
+## Migration Cell cycle
+Migration_Sum_CC <- as.data.frame(cbind(Migration,ReCluster,Cell_cycle))
+#!!! We need to trans the factor to numeric in here
+Migration_Sum_CC$Migration <- as.numeric(Migration_Sum_CC$Migration)
+
+ggplot_Migration_CC <- ggplot(data =Migration_Sum_CC, aes(x = ReCluster, y = Migration, fill =Cell_cycle))
+ggplot_Migration_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+## Metastasis ##--------------------------------------------------------------------------------------------------------------------
 Metastasis_Sum <- as.data.frame(cbind(Metastasis,ReCluster))
 #!!! We need to trans the factor to numeric in here
 Metastasis_Sum$Metastasis <- as.numeric(Metastasis_Sum$Metastasis)
@@ -100,10 +225,25 @@ ggplot_Metastasis
 ggplot_Metastasis  + geom_violin()
 ggplot_Metastasis  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_Metastasis + geom_violin(trim = FALSE) +
-                    stat_summary(fun= mean, geom = "point",
-                    shape = 23, size = 2, color = "blue")
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
 
-## ACST
+## Metastasis Cell cycle
+Metastasis_Sum_CC <- as.data.frame(cbind(Metastasis,ReCluster,Cell_cycle))
+#!!! We need to trans the factor to numeric in here
+Metastasis_Sum_CC$Metastasis <- as.numeric(Metastasis_Sum_CC$Metastasis)
+#Metastasis_Sum_CC$Metastasis <- as.numeric(log10(Metastasis_Sum_CC$Metastasis))
+
+ggplot_Metastasis_CC <- ggplot(data =Metastasis_Sum_CC, aes(x = ReCluster, y = Metastasis, fill =Cell_cycle))
+ggplot_Metastasis_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+## ACST ##--------------------------------------------------------------------------------------------------------------------
 ACST_Sum <- as.data.frame(cbind(ACST,ReCluster))
 #!!! We need to trans the factor to numeric in here
 ACST_Sum$ACST <- as.numeric(ACST_Sum$ACST)
@@ -113,8 +253,95 @@ ggplot_ACST
 ggplot_ACST  + geom_violin()
 ggplot_ACST  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_ACST + geom_violin(trim = FALSE) +
-              stat_summary(fun= mean, geom = "point",
-              shape = 23, size = 2, color = "blue")
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+## ACST Cell cycle
+ACST_Sum_CC <- as.data.frame(cbind(ACST,ReCluster,Cell_cycle))
+#!!! We need to trans the factor to numeric in here
+ACST_Sum_CC$ACST <- as.numeric(ACST_Sum_CC$ACST)
+ACST_Sum_CC$ACST <- as.numeric(log2(ACST_Sum_CC$ACST))
+
+ggplot_ACST_CC <- ggplot(data =ACST_Sum_CC, aes(x = ReCluster, y = ACST, fill =Cell_cycle))
+ggplot_ACST_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "ACST")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+
+## Genes ##******************************************************************************************************************************
+## PTK2 Cell cycle  ##--------------------------------------------------------------------------------------------------------------------
+PTK2_Sum_CC <- as.data.frame(cbind(t(PTK2),ReCluster,Cell_cycle))
+
+PTK2_Sum_CC$PTK2 <- as.numeric(PTK2_Sum_CC$PTK2) #!!! We need to trans the factor to numeric in here
+PTK2_Sum_CC$PTK2 <- as.numeric(log10(PTK2_Sum_CC$PTK2)) #!!! We need to trans the factor to numeric in here
+
+
+ggplot_PTK2_CC <- ggplot(data =PTK2_Sum_CC, aes(x = ReCluster, y = PTK2, fill =Cell_cycle))
+ggplot_PTK2_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+                  #      labs(title = "NP")+
+                  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                        size=10, angle=45),
+                        axis.text.y = element_text(face="bold"),
+                        axis.title.x = element_text(size = 14,face="bold"),
+                        axis.title.y = element_text(size = 14,face="bold"))
+
+ggplot_PTK2_CC  + geom_boxplot(alpha = 0.5, show.legend = FALSE)+ 
+                  scale_fill_manual(values = colors_cc)
+ggplot_PTK2_CC + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+
+###
+## TOP2A Cell cycle  ##--------------------------------------------------------------------------------------------------------------------
+TOP2A_Sum_CC <- as.data.frame(cbind(t(TOP2A),ReCluster,Cell_cycle))
+
+TOP2A_Sum_CC$TOP2A <- as.numeric(TOP2A_Sum_CC$TOP2A) #!!! We need to trans the factor to numeric in here
+TOP2A_Sum_CC$TOP2A <- as.numeric(log2(TOP2A_Sum_CC$TOP2A)) #!!! We need to trans the factor to numeric in here
+
+ggplot_TOP2A_CC <- ggplot(data =TOP2A_Sum_CC, aes(x = ReCluster, y = TOP2A, fill =Cell_cycle))
+ggplot_TOP2A_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+ggplot_TOP2A_CC  + geom_boxplot(alpha = 0.8, show.legend = TRUE)+ 
+                   scale_fill_manual(values = colors_cc)+
+                  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                                   size=10, angle=45),
+                        axis.text.y = element_text(face="bold"),
+                        axis.title.x = element_text(size = 14,face="bold"),
+                        axis.title.y = element_text(size = 14,face="bold"))
+
+
+## CGAS Cell cycle  ##--------------------------------------------------------------------------------------------------------------------
+CGAS_Sum_CC <- as.data.frame(cbind(t(CGAS),ReCluster,Cell_cycle))
+
+CGAS_Sum_CC$CGAS<- as.numeric(CGAS_Sum_CC$CGAS) #!!! We need to trans the factor to numeric in here
+CGAS_Sum_CC$CGAS<- as.numeric(log10(CGAS_Sum_CC$CGAS)) #!!! We need to trans the factor to numeric in here
+
+ggplot_CGAS_CC <- ggplot(data =CGAS_Sum_CC, aes(x = ReCluster, y = CGAS, fill =Cell_cycle))
+ggplot_CGAS_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))
+
+ggplot_CGAS_CC   + geom_boxplot(alpha = 0.8, show.legend = TRUE)+ 
+                   scale_fill_manual(values = colors_cc)+
+                  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                      size=10, angle=45),
+                        axis.text.y = element_text(face="bold"),
+                        axis.title.x = element_text(size = 14,face="bold"),
+                        axis.title.y = element_text(size = 14,face="bold"))
+
 
 ######################################################################################
 
