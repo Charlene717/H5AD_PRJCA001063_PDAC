@@ -24,7 +24,7 @@ library(garnett)
 ############# Import files settings #############
   ## General setting
   PathName = setwd(getwd())
-  RVersion = "20210608V1"
+  RVersion = "20210610V1"
   dir.create(paste0(PathName,"/",RVersion))
   
   ## Marker genes file
@@ -437,7 +437,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_NE_Name))
                 
                 Marker_NP_file_Name <- c("REACTOME_NUCLEAR_PORE_COMPLEX_NPC_DISASSEMBLY")
-                Marker_NP_Name <- c("NP")
+                Marker_NP_Name <- c("NPC")
                 cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_NP_file_Name,Marker_NP_Name,
                                                                             marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
                 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_NP_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
