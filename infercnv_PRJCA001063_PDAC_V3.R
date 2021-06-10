@@ -7,7 +7,7 @@ library(infercnv)
 ############# Read file settings #############
 
 PathName = setwd(getwd())
-RVersion = "20210608V1"
+RVersion = "20210610V1"
 dir.create(paste0(PathName,"/",RVersion))
 
 
@@ -68,11 +68,13 @@ dir.create(paste0(PathName,"/",RVersion))
 #            label_cell_groups = F,show_trajectory_graph = F, group_label_size = 5)
 # plot_cells(cds_sub_CPV2_2, color_cells_by="assigned_cell_type", group_cells_by="cluster",
 #            label_cell_groups = T,show_trajectory_graph = F, group_label_size = 3)
+#
+# cds_sub_CPV2_2 <- cds_sub_AcinaDucT_NewK_ReCluster
 
-cds_sub_CPV2_2 <- cds_sub_AcinaDucT_NewK_ReCluster
+inferCNV_cds_sub_AcinaDucT_NewK_ReCluster <- cds_sub_AcinaDucT_NewK_ReCluster
 
 
-tttExpression <- as.data.frame(cds_sub_CPV2_2@assays@data@listData[["logcounts"]])
+tttExpression <- as.data.frame(inferCNV_cds_sub_AcinaDucT_NewK_ReCluster@assays@data@listData[["logcounts"]])
 # ¥i¥H¦Ò¼{®³±¼
 tttExpression2 <- tttExpression[which(rowSums( tttExpression) > 0),]
 tttExpression2 <- tttExpression
@@ -85,7 +87,7 @@ tttExpression3<- as.matrix(tttExpression2)
 
 # tttGene <- as.data.frame(row.names(tttExpression))
 # row.names(tttGene) <- tttGene [,1]
-tttCT <- as.data.frame(cds_sub_CPV2_2@colData)
+tttCT <- as.data.frame(inferCNV_cds_sub_AcinaDucT_NewK_ReCluster@colData)
 tttCT2 <- as.data.frame(tttCT[,15])
 
 library(dplyr)
