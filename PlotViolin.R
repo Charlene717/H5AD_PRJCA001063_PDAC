@@ -58,6 +58,20 @@ ggplot_PDAC  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_PDAC + geom_violin(trim = FALSE) +
               stat_summary(fun= mean, geom = "point",
               shape = 23, size = 2, color = "blue")
+
+ggplot_PDAC + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(PDAC_Sum$PDAC), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
+
 ## PDAC Cell cycle
 PDAC_Sum_CC <- as.data.frame(cbind(PDAC,ReCluster,Cell_cycle))
 #!!! We need to trans the factor to numeric in here
@@ -85,6 +99,19 @@ ggplot_EMT + geom_violin(trim = FALSE) +
              stat_summary(fun= mean, geom = "point",
              shape = 23, size = 2, color = "blue")
 
+ggplot_EMT + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(EMT_Sum$EMT), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
+
 ## EMT Cell cycle
 EMT_Sum_CC <- as.data.frame(cbind(EMT,ReCluster,Cell_cycle))
 #!!! We need to trans the factor to numeric in here
@@ -111,6 +138,18 @@ ggplot_NP  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_NP + geom_violin(trim = FALSE) +
             stat_summary(fun= mean, geom = "point",
             shape = 23, size = 2, color = "blue")
+ggplot_NP + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(NP_Sum$NPC), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
 
 ## NP PTK2 ## error
 NP_Sum_PTK2 <- as.data.frame(cbind(NPC,ReCluster,t(PTK2)))
@@ -147,6 +186,7 @@ ggplot_NP_CC + geom_violin(trim = FALSE) +
   stat_summary(fun= mean, geom = "point",
                shape = 23, size = 2, color = "blue")
 
+
 ## NE  ##--------------------------------------------------------------------------------------------------------------------
 NE_Sum <- as.data.frame(cbind(NE,ReCluster))
 #!!! We need to trans the factor to numeric in here
@@ -156,9 +196,22 @@ ggplot_NE <- ggplot(data =NE_Sum, aes(x = ReCluster, y = NE, fill =ReCluster))
 ggplot_NE 
 ggplot_NE  + geom_violin()
 ggplot_NE  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
-ggplot_Ne + geom_violin(trim = FALSE) +
+ggplot_NE + geom_violin(trim = FALSE) +
   stat_summary(fun= mean, geom = "point",
                shape = 23, size = 2, color = "blue")
+
+ggplot_NE + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+                theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                                 size=10, angle=45),
+                      axis.text.y = element_text(face="bold"),
+                      axis.title.x = element_text(size = 14,face="bold"),
+                      axis.title.y = element_text(size = 14,face="bold"))+
+                geom_hline(yintercept = mean(NE_Sum$NE), linetype = 2)+ # Add horizontal line at base mean
+                stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+                stat_compare_means(label = "p.signif", method = "t.test",
+                                   ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
 
 ## NE Cell cycle
 NE_Sum_CC <- as.data.frame(cbind(NE,ReCluster,Cell_cycle))
@@ -174,7 +227,18 @@ ggplot_NE_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) +
         axis.title.x = element_text(size = 14,face="bold"),
         axis.title.y = element_text(size = 14,face="bold"))
 
-
+library(ggpubr)
+ggplot_NE_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) + 
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(NE_Sum_CC$NE), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 1600)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.")                      # Pairwise comparison against all
 ## ATR ##--------------------------------------------------------------------------------------------------------------------
 ATR_Sum <- as.data.frame(cbind(ATR,ReCluster))
 #!!! We need to trans the factor to numeric in here
@@ -215,6 +279,20 @@ ggplot_Migration_CC  + geom_violin()+ scale_fill_manual(values = colors_cc) +
         axis.title.x = element_text(size = 14,face="bold"),
         axis.title.y = element_text(size = 14,face="bold"))
 
+ggplot_Migration + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(Migration_Sum$Migration), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
+
+
 ## Metastasis ##--------------------------------------------------------------------------------------------------------------------
 Metastasis_Sum <- as.data.frame(cbind(Metastasis,ReCluster))
 #!!! We need to trans the factor to numeric in here
@@ -227,6 +305,19 @@ ggplot_Metastasis  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_Metastasis + geom_violin(trim = FALSE) +
   stat_summary(fun= mean, geom = "point",
                shape = 23, size = 2, color = "blue")
+ggplot_Metastasis + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(Metastasis_Sum$Metastasis), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
+
 
 ## Metastasis Cell cycle
 Metastasis_Sum_CC <- as.data.frame(cbind(Metastasis,ReCluster,Cell_cycle))
@@ -255,6 +346,20 @@ ggplot_ACST  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_ACST + geom_violin(trim = FALSE) +
   stat_summary(fun= mean, geom = "point",
                shape = 23, size = 2, color = "blue")
+ggplot_ACST + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(ACST_Sum$ACST), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 34000, size = 5)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 32000, size = 5)      # Pairwise comparison against all
+
+
 ## ACST Cell cycle
 ACST_Sum_CC <- as.data.frame(cbind(ACST,ReCluster,Cell_cycle))
 #!!! We need to trans the factor to numeric in here
