@@ -11,6 +11,8 @@ TOP2A <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@assays@data@listDa
 
 # cds_sub_AcinaDucT_NewK_ReCluster_TOP2A <- cds_sub_AcinaDucT_NewK_ReCluster_TOP2A[,cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@colData@listData[["ReCluster"]] %in% c("AC")]
 
+####### ------------------------------------- TOP2A G1 ------------------------------------- ####### 
+
 ## TOP2A G1
 cds_sub_AcinaDucT_NewK_ReCluster_TOP2A_G1 <- cds_sub_AcinaDucT_NewK_ReCluster_TOP2A[,cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@colData@listData[["cell_cycle"]] %in% c("G1")]
 # plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A_G1, group_cells_by="cell_cycle", ncol=2) +
@@ -58,7 +60,7 @@ colnames(TOP2A_coreCD00_G1_3)[2] <- c("Type")
 
 # TOP2A_coreCD00_G1_3 <-TOP2A_coreCD00_G1_3+log10(TOP2A_coreCD00_G1_3) 
 
-
+###### ----------- Combine Two group ---------------- #####
 TOP2A_G1_Sum <- rbind(TOP2A_G1_3,TOP2A_coreCD00_G1_3 )
 #!!! We need to trans the factor to numeric in here
 TOP2A_G1_Sum$TOP2A <- as.numeric(TOP2A_G1_Sum$TOP2A)
@@ -77,7 +79,7 @@ ggplot_TOP2A_G1_Sum + geom_violin(trim = FALSE) +
                shape = 23, size = 2, color = "blue")
 library(ggpubr)
 # https://www.r-bloggers.com/2017/06/add-p-values-and-significance-levels-to-ggplots/
-ggplot_TOP2A_G1_Sum + geom_violin(trim = FALSE, size = 0.8) +
+ggplot_TOP2A_G1_Sum_M <- ggplot_TOP2A_G1_Sum + geom_violin(trim = FALSE, size = 0.8) +
  # scale_y_continuous(trans = 'log10', limits = c(1, 5))+
   
    theme(panel.background = element_rect(fill = "white", colour = "black",
@@ -96,8 +98,118 @@ ggplot_TOP2A_G1_Sum + geom_violin(trim = FALSE, size = 0.8) +
                       label.x = 1.5, label.y = 4,size = 7)+
 #  theme(axis.line.x = element_line(colour = "black", size = 0.5),
 #        axis.line.y = element_line(colour = "black", size = 0.5))+
-  theme(legend.position="top",legend.text=element_text(size = 14),legend.title=element_text(size = 14,face="bold"))
-  
+  theme(legend.position="top",legend.text=element_text(size = 14),legend.title=element_text(size = 14,face="bold"))+ 
+  ggtitle("G1")+ 
+  theme(plot.title = element_text(size = 18, vjust = -5 ,hjust = 0,face="bold")
+  )
+
+ggplot_TOP2A_G1_Sum_M
+####### ------------------------------------- TOP2A S ------------------------------------- ####### 
+cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A_S <- cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A[,cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A@colData@listData[["cell_cycle"]] %in% c("S")]
+TOP2A_coreCD00_S <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A_S@assays@data@listData[["counts"]])
+
+TOP2A_S_2 <- t(TOP2A_S)
+TOP2A_S_2_A <- rep("AcinaDucT", times=length(TOP2A_S_2))
+TOP2A_S_3 <- as.data.frame(cbind(TOP2A_S_2,TOP2A_S_2_A))
+colnames(TOP2A_S_3)[2] <- c("Type")
+
+TOP2A_coreCD00_S_2 <- t(TOP2A_coreCD00_S)
+TOP2A_coreCD00_S_2_A <- rep("CoreCD00", times=length(TOP2A_coreCD00_S_2))
+TOP2A_coreCD00_S_3 <- as.data.frame(cbind(TOP2A_coreCD00_S_2,TOP2A_coreCD00_S_2_A))
+colnames(TOP2A_coreCD00_S_3)[2] <- c("Type")
+
+# TOP2A_coreCD00_S_3 <-TOP2A_coreCD00_S_3+loS0(TOP2A_coreCD00_S_3) 
+
+##------ Combine Two group -----------##
+TOP2A_S_Sum <- rbind(TOP2A_S_3,TOP2A_coreCD00_S_3 )
+#!!! We need to trans the factor to numeric in here
+TOP2A_S_Sum$TOP2A <- as.numeric(TOP2A_S_Sum$TOP2A)
+
+##----- Plot -----##
+ggplot_TOP2A_S_Sum <- ggplot(data =TOP2A_S_Sum, aes(x = Type , y = TOP2A , fill =Type ))
+ggplot_TOP2A_S_Sum 
+ggplot_TOP2A_S_Sum  + geom_violin()
+ggplot_TOP2A_S_Sum  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
+ggplot_TOP2A_S_Sum + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+library(ggpubr)
+# https://www.r-bloggers.com/2017/06/add-p-values-and-significance-levels-to-ggplots/
+ggplot_TOP2A_S_Sum_M <- ggplot_TOP2A_S_Sum + geom_violin(trim = FALSE, size = 0.8) +
+  theme(panel.background = element_rect(fill = "white", colour = "black",
+                                        size = 2, linetype = "solid"))+
+  stat_summary(fun= mean, geom = "point",
+               shape = 18, size = 3, color = "black")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=14,color="black", angle=0,vjust=0.5),
+        axis.text.y = element_text(face="bold",color="black",  size=14),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(TOP2A_S_Sum$TOP2A), linetype = 2)+ # Add horizontal line at base mean
+  scale_fill_manual(values=c("#5fc244", "#417034"))+
+  stat_compare_means( aes(label = ..p.signif..), 
+                      label.x = 1.5, label.y = 12,size = 7)+
+  theme(legend.position="top",legend.text=element_text(size = 14),legend.title=element_text(size = 14,face="bold"))+ 
+  ggtitle("S")+ 
+  theme(plot.title = element_text(size = 18, vjust = -5 ,hjust = 0,face="bold")
+  )
+
+ggplot_TOP2A_S_Sum_M
+
+####### ------------------------------------- TOP2A G2M ------------------------------------- #######
+cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A_G2M <- cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A[,cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A@colData@listData[["cell_cycle"]] %in% c("G2M")]
+TOP2A_coreCD00_G2M <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_coreCD00_TOP2A_G2M@assays@data@listData[["counts"]])
+
+TOP2A_G2M_2 <- t(TOP2A_G2M)
+TOP2A_G2M_2_A <- rep("AcinaDucT", times=length(TOP2A_G2M_2))
+TOP2A_G2M_3 <- as.data.frame(cbind(TOP2A_G2M_2,TOP2A_G2M_2_A))
+colnames(TOP2A_G2M_3)[2] <- c("Type")
+
+TOP2A_coreCD00_G2M_2 <- t(TOP2A_coreCD00_G2M)
+TOP2A_coreCD00_G2M_2_A <- rep("CoreCD00", times=length(TOP2A_coreCD00_G2M_2))
+TOP2A_coreCD00_G2M_3 <- as.data.frame(cbind(TOP2A_coreCD00_G2M_2,TOP2A_coreCD00_G2M_2_A))
+colnames(TOP2A_coreCD00_G2M_3)[2] <- c("Type")
+
+# TOP2A_coreCD00_G2M_3 <-TOP2A_coreCD00_G2M_3+loG2M0(TOP2A_coreCD00_G2M_3) 
+
+##------ Combine Two group -----------##
+TOP2A_G2M_Sum <- rbind(TOP2A_G2M_3,TOP2A_coreCD00_G2M_3 )
+#!!! We need to trans the factor to numeric in here
+TOP2A_G2M_Sum$TOP2A <- as.numeric(TOP2A_G2M_Sum$TOP2A)
+
+##----- Plot -----##
+ggplot_TOP2A_G2M_Sum <- ggplot(data =TOP2A_G2M_Sum, aes(x = Type , y = TOP2A , fill =Type ))
+ggplot_TOP2A_G2M_Sum 
+ggplot_TOP2A_G2M_Sum  + geom_violin()
+ggplot_TOP2A_G2M_Sum  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
+ggplot_TOP2A_G2M_Sum + geom_violin(trim = FALSE) +
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+library(ggpubr)
+# https://www.r-bloggers.com/2017/06/add-p-values-and-significance-levels-to-ggplots/
+ggplot_TOP2A_G2M_Sum_M <- ggplot_TOP2A_G2M_Sum + geom_violin(trim = FALSE, size = 0.8) +
+  theme(panel.background = element_rect(fill = "white", colour = "black",
+                                        size = 2, linetype = "solid"))+
+  stat_summary(fun= mean, geom = "point",
+               shape = 18, size = 3, color = "black")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=14,color="black", angle=0,vjust=0.5),
+        axis.text.y = element_text(face="bold",color="black",  size=14),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(TOP2A_G2M_Sum$TOP2A), linetype = 2)+ # Add horizontal line at base mean
+  scale_fill_manual(values=c("#538ebd", "#2e6087"))+
+  stat_compare_means( aes(label = ..p.signif..), 
+                      label.x = 1.5, label.y = 50,size = 7)+
+  theme(legend.position="top",legend.text=element_text(size = 14),legend.title=element_text(size = 14,face="bold"))+ 
+  ggtitle("G2M")+ 
+  theme(plot.title = element_text(size = 18, vjust = -5 ,hjust = 0,face="bold")
+  )
+
+ggplot_TOP2A_G2M_Sum_M
+
+
+ggplot_TOP2A_G1_Sum_M + ggplot_TOP2A_S_Sum_M + ggplot_TOP2A_G2M_Sum_M  
 # ggplot_TOP2A_G1_Sum + geom_boxplot(trim = FALSE, size = 0.8) + 
 #   theme(panel.background = element_rect(fill = "white", colour = "black",
 #                                         size = 2, linetype = "solid"))+
