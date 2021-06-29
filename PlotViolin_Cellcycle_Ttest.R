@@ -1,3 +1,4 @@
+rm(list=(ls()[ls()!="cds_sub_AcinaDucT_NewK_ReCluster"]))
 
 #### AcinaDucT
 ## TOP2A
