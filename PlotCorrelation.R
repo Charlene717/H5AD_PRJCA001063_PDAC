@@ -41,6 +41,12 @@ plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_CGAS, group_cells_by="cell_cy
   theme(axis.text.x=element_text(angle=45, hjust=1))
 CGAS <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_CGAS@assays@data@listData[["counts"]])
 
+# TP53
+ciliated_genes_TP53 <- c("TP53")
+cds_sub_AcinaDucT_NewK_ReCluster_TP53 <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_TP53,]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_TP53, group_cells_by="cell_cycle", ncol=2) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+TP53 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TP53@assays@data@listData[["counts"]])
 
 ## \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
