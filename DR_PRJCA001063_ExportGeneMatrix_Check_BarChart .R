@@ -25,12 +25,46 @@ ggplot(annotation_col, aes(x = ReCluster, fill = cell_cycle)) +
   theme(axis.text.x = element_text(face="bold", # color="#993333", 
                                    size=10, angle=75,vjust =0.55),
         axis.text.y = element_text(face="bold",hjust =-8),
-        axis.title.x = element_text(size = 14,face="bold"),
-        axis.title.y = element_text(size = 14,face="bold"),
+        axis.title.x = element_text(size = 16,face="bold"),
+        axis.title.y = element_text(size = 16,face="bold"),
         plot.title = element_text(color="black", size=20, 
                                   face="bold.italic",hjust = 0.1,vjust =-8), # margin = margin(t = 0.5, b = -7),
-        legend.title = element_text(size=12, color = "black", face="bold"),
-        legend.text = element_text(colour="black", size=12,face="bold"))+ scale_fill_manual(values = colors_cc)
+        legend.title = element_text(size=13, color = "black", face="bold"),
+        legend.text = element_text(colour="black", size=12,face="bold"))+ 
+  scale_fill_manual(values = colors_cc)+ 
+  theme(plot.title = element_text(size = 18,vjust = 0.5,hjust = 0.5)
+  )
+
+ggplot(annotation_col, aes(x = ReCluster, fill = cell_cycle))+ 
+  geom_bar(position = "dodge")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=75,vjust =0.55),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 16,face="bold"),
+        axis.title.y = element_text(size = 16,face="bold"),
+        plot.title = element_text(color="black", size=20, 
+                                  face="bold.italic",hjust = 0.1,vjust =-8), # margin = margin(t = 0.5, b = -7),
+        legend.title = element_text(size=13, color = "black", face="bold"),
+        legend.text = element_text(colour="black", size=12,face="bold"))+ 
+  scale_fill_manual(values = colors_cc)+ 
+  theme(plot.title = element_text(size = 18, vjust = 0.5,hjust = 0.5)
+  )
+
+ggplot(annotation_col, aes(x = ReCluster, fill = cell_cycle))+ 
+  geom_bar(position = "stack")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=75,vjust =0.55),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 16,face="bold"),
+        axis.title.y = element_text(size = 16,face="bold"),
+        plot.title = element_text(color="black", size=20, 
+                                  face="bold.italic",hjust = 0.1,vjust =-8), # margin = margin(t = 0.5, b = -7),
+        legend.title = element_text(size=13, color = "black", face="bold"),
+        legend.text = element_text(colour="black", size=12,face="bold"))+ 
+  scale_fill_manual(values = colors_cc)+ 
+  theme(plot.title = element_text(size = 18, vjust = 0.5,hjust = 0.5)
+  )
+
 
 # ## Heatmap & bar
 # library(pheatmap)
