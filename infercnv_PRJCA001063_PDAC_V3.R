@@ -121,8 +121,8 @@ infercnv_obj = CreateInfercnvObject(raw_counts_matrix= tttExpression3,
                                     annotations_file= tttCT5,
                                     #        delim="\t",
                                     gene_order_file=system.file("extdata", "gencode_downsampled.EXAMPLE_ONLY_DONT_REUSE.txt", package = "infercnv"),
-                                    ref_group_names=c("AC"))
-                                    #ref_group_names=c("AC","ND01"))
+                                    # ref_group_names=c("AC","nAtD","ND01"))
+                                    ref_group_names=c("AC","ND01"))
 # no inference
 # infercnv_obj@reference_grouped_cell_indices[["Acinar cell"]] <- as.integer(infercnv_obj@reference_grouped_cell_indices[["Acinar cell"]])
 
