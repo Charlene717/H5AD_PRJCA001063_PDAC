@@ -41,6 +41,7 @@ library(garnett)
   Main_Group = c("TOP2A","TP53","CGAS","PTK2")
   Main_Group2 = c("TOP2A","CGAS","H2AX","PTK2","NSUN2","TP53","MYC","TOP2B","EXO1","KRAS","MUC1","AMBP","FXYD2","TOP2B","CCNE1")
   candidates14 = c("BRIP1","KIF23","TOP2A","FOSL1","FAM25A","ANLN","NCAPH","KRT9","MCM4","CKAP2L","CENPE","RACGAP1","DTL","RAD51AP1")
+  Main_CNV <- c("CDT1","CDC6","RAD17","GMNN") 
   
   ## Color setting
   colors_cc <-c("#FF9912B3", "#2e6087", "#417034")  ## Color for Cell-Cycle
@@ -246,6 +247,9 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 plot_cells(cds_sub_AcinaDucT , genes=c("EXO1"), cell_size = 0.8,show_trajectory_graph = FALSE,label_cell_groups=FALSE) #ok
                 plot_cells(cds_sub_AcinaDucT , genes=c("MYC"), cell_size = 0.8,show_trajectory_graph = FALSE,label_cell_groups=FALSE) #ok
                 
+                plot_cells(cds_sub_AcinaDucT , genes=c(Main_CNV), show_trajectory_graph = FALSE) #ok
+                
+                
                 set.seed(1) # Fix the seed
                 cds_sub_AcinaDucT_NewK <- cluster_cells(cds_sub_AcinaDucT,k = k_cds_sub_AcinaDucT, resolution=1e-5)
                 plot_cells(cds_sub_AcinaDucT_NewK, color_cells_by = "cluster",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
@@ -378,10 +382,12 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 Maingroup_ciliated_genes <- c(Main_Group)
                 cds_marrow_cc_AcinaDucT_NewK_ReCluster <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% Maingroup_ciliated_genes,]
                 
-                plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = F)+ scale_fill_manual(values = colors_cc)
-                plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)
+                plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = F)+ 
+                                  scale_fill_manual(values = colors_cc)+ylim(0, 15)
+                plot_genes_violin(cds_marrow_cc_AcinaDucT_NewK_ReCluster, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ 
+                                  scale_fill_manual(values = colors_cc)+ylim(0.001, 15)
                 plot_genes_violin(cds_marrow_cc, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-                  geom_boxplot(width=0.1, fill="white", alpha = 0.7) + theme(axis.text.x=element_text(angle=45, hjust=1))
+                  geom_boxplot(width=0.1, fill="white", alpha = 0.7) + theme(axis.text.x=element_text(angle=45, hjust=1))+ylim(0.001, 15)
                 
                 ####################    Cell discrimination by AddModuleScore (AcinaDucT)    ####################
                 getFilePath("Monocle3_AddModuleScore.R")
@@ -536,12 +542,12 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 cds_sub_DT2TOP2ACTR_Maingroup <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main_Group,]
                 plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = FALSE) +
                                   scale_fill_manual(values = colors_cc) + 
-                                  theme(axis.text.x=element_text(angle=45, hjust=1))
+                                  theme(axis.text.x=element_text(angle=45, hjust=1))+ylim(0, 15)
       
                 plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T) +
-                  scale_fill_manual(values = colors_cc) + theme(axis.text.x=element_text(angle=45, hjust=1))
+                  scale_fill_manual(values = colors_cc) + theme(axis.text.x=element_text(angle=45, hjust=1))+ylim(0.001, 15)
                 plot_genes_violin(cds_sub_DT2TOP2ACTR_Maingroup, group_cells_by="cell_cycle", ncol=2, log_scale = T)+ scale_fill_manual(values = colors_cc)+
-                  geom_boxplot(width=0.1, fill="white",alpha=(0.7)) + theme(axis.text.x=element_text(angle=45, hjust=1))
+                  geom_boxplot(width=0.1, fill="white",alpha=(0.7)) + theme(axis.text.x=element_text(angle=45, hjust=1))+ylim(0.001, 15)
                 
                 ## Plot pseudotime
                 MainGroup_lineage_sub_DT2TOP2ACTR <- cds_sub_DucT2_TOP2ACenter[rowData(cds_sub_DucT2_TOP2ACenter)$gene_short_name %in% Main_Group]
