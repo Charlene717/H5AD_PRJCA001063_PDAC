@@ -2,7 +2,7 @@
 ##### https://zhuanlan.zhihu.com/p/148189818
 
 memory.limit(150000)
-
+library(ggpubr)
 colors_cc <-c("#FF9912B3", "#2e6087", "#417034")  ## Color for Cell-Cycle
 
 
@@ -25,7 +25,7 @@ Cell_cycle <- as.character(cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["c
 ciliated_genes_PTK2 <- c("PTK2")
 cds_sub_AcinaDucT_NewK_ReCluster_PTK2 <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_PTK2,]
 plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_PTK2, group_cells_by="cell_cycle", ncol=2) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
+                  theme(axis.text.x=element_text(angle=45, hjust=1))
 PTK2 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_PTK2@assays@data@listData[["counts"]])
 # PTK2 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_PTK2@assays@data@listData[["logcounts"]])
 
@@ -33,7 +33,7 @@ PTK2 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_PTK2@assays@data@listData
 ciliated_genes_TOP2A <- c("TOP2A")
 cds_sub_AcinaDucT_NewK_ReCluster_TOP2A <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_TOP2A,]
 plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A, group_cells_by="cell_cycle", ncol=2) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
+                  theme(axis.text.x=element_text(angle=45, hjust=1))
 TOP2A <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@assays@data@listData[["counts"]])
 # TOP2A <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@assays@data@listData[["logcounts"]])
 
@@ -41,8 +41,17 @@ TOP2A <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TOP2A@assays@data@listDa
 ciliated_genes_CGAS <- c("CGAS")
 cds_sub_AcinaDucT_NewK_ReCluster_CGAS <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_CGAS,]
 plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_CGAS, group_cells_by="cell_cycle", ncol=2) +
-  theme(axis.text.x=element_text(angle=45, hjust=1))
+                  theme(axis.text.x=element_text(angle=45, hjust=1))
 CGAS <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_CGAS@assays@data@listData[["counts"]])
+
+# TP53
+ciliated_genes_TP53 <- c("TP53")
+cds_sub_AcinaDucT_NewK_ReCluster_TP53 <- cds_sub_AcinaDucT_NewK_ReCluster[rowData(cds_sub_AcinaDucT_NewK_ReCluster)$gene_short_name %in% ciliated_genes_TP53,]
+plot_genes_violin(cds_sub_AcinaDucT_NewK_ReCluster_TP53, group_cells_by="cell_cycle", ncol=2) +
+                  theme(axis.text.x=element_text(angle=45, hjust=1))
+TP53 <- as.data.frame(cds_sub_AcinaDucT_NewK_ReCluster_TP53@assays@data@listData[["counts"]])
+
+
 
 ## \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 ## Markers ##******************************************************************************************************************************
@@ -165,6 +174,7 @@ ggplot_NP  + geom_boxplot(alpha = 0.5, show.legend = FALSE)
 ggplot_NP + geom_violin(trim = FALSE) +
   stat_summary(fun= mean, geom = "point",
                shape = 23, size = 2, color = "blue")
+
 ## NPC Cell cycle
 NP_Sum_CC <- as.data.frame(cbind(NPC,ReCluster,Cell_cycle))
 #!!! We need to trans the factor to numeric in here
@@ -446,10 +456,170 @@ ggplot_CGAS_CC   + geom_boxplot(alpha = 0.8, show.legend = TRUE)+
                         axis.text.y = element_text(face="bold"),
                         axis.title.x = element_text(size = 14,face="bold"),
                         axis.title.y = element_text(size = 14,face="bold"))
+## CGAS
+CGAS_Sum_CC2 <- as.data.frame(cbind(t(CGAS),Cell_cycle))
 
+CGAS_Sum_CC2$CGAS<- as.numeric(CGAS_Sum_CC2$CGAS) #!!! We need to trans the factor to numeric in here
+CGAS_Sum_CC2$CGAS<- as.numeric(log10(CGAS_Sum_CC2$CGAS)) #!!! We need to trans the factor to numeric in here
+
+ggplot_CGAS_CC2 <- ggplot(data =CGAS_Sum_CC2, aes(x = Cell_cycle, y = CGAS, fill =Cell_cycle))
+ggplot_CGAS_CC2  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+ylim(0, 1.8)
+
+## TOP2A
+TOP2A_Sum_CC2 <- as.data.frame(cbind(t(TOP2A),Cell_cycle))
+
+TOP2A_Sum_CC2$TOP2A<- as.numeric(TOP2A_Sum_CC2$TOP2A) #!!! We need to trans the factor to numeric in here
+TOP2A_Sum_CC2$TOP2A<- as.numeric(log10(TOP2A_Sum_CC2$TOP2A)) #!!! We need to trans the factor to numeric in here
+
+ggplot_TOP2A_CC2 <- ggplot(data =TOP2A_Sum_CC2, aes(x = Cell_cycle, y = TOP2A, fill =Cell_cycle))
+ggplot_TOP2A_CC2  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+ylim(0, 1.8)
+
+## PTK2
+PTK2_Sum_CC2 <- as.data.frame(cbind(t(PTK2),Cell_cycle))
+
+PTK2_Sum_CC2$PTK2<- as.numeric(PTK2_Sum_CC2$PTK2) #!!! We need to trans the factor to numeric in here
+PTK2_Sum_CC2$PTK2<- as.numeric(log10(PTK2_Sum_CC2$PTK2)) #!!! We need to trans the factor to numeric in here
+
+ggplot_PTK2_CC2 <- ggplot(data =PTK2_Sum_CC2, aes(x = Cell_cycle, y = PTK2, fill =Cell_cycle))
+ggplot_PTK2_CC2  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+ylim(0, 1.8)
+
+## TP53
+TP53_Sum_CC2 <- as.data.frame(cbind(t(TP53),Cell_cycle))
+
+TP53_Sum_CC2$TP53<- as.numeric(TP53_Sum_CC2$TP53) #!!! We need to trans the factor to numeric in here
+TP53_Sum_CC2$TP53<- as.numeric(log10(TP53_Sum_CC2$TP53)) #!!! We need to trans the factor to numeric in here
+
+ggplot_TP53_CC2 <- ggplot(data =TP53_Sum_CC2, aes(x = Cell_cycle, y = TP53, fill =Cell_cycle))
+ggplot_TP53_CC2  + geom_violin()+ scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=45),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+ylim(0, 1.8)
 
 ######################################################################################
+#################################/////////////////////////////////////////////////////////////////#####################################################
+#################################/////////////////////////////////////////////////////////////////#####################################################
 
+library(ggpubr)
+## PTK2 ReCluster  ##--------------------------------------------------------------------------------------------------------------------
+PTK2_Sum <- as.data.frame(cbind(t(PTK2),ReCluster))
+
+PTK2_Sum$PTK2 <- as.numeric(PTK2_Sum$PTK2) #!!! We need to trans the factor to numeric in here
+PTK2_Sum$PTK2 <- as.numeric(log10(PTK2_Sum$PTK2)) #!!! We need to trans the factor to numeric in here
+
+
+ggplot_PTK2 <- ggplot(data =PTK2_Sum, aes(x = ReCluster, y = PTK2, fill =ReCluster))
+ggplot_PTK2  + geom_violin()+ 
+  #scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=90),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(PTK2_Sum$PTK2), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 1, size = 3)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 0.9, size = 3)+      # Pairwise comparison against all
+  stat_summary(fun= mean, geom = "point",
+             shape = 23, size = 2, color = "blue")
+
+## TryGene ReCluster  ##--------------------------------------------------------------------------------------------------------------------
+TryGene <- TP53
+# TryGene <- c('TP53')
+TryGene_Sum <- as.data.frame(cbind(t(TryGene),ReCluster))
+
+TryGene_Sum$TP53 <- as.numeric(TryGene_Sum$TP53) #!!! We need to trans the factor to numeric in here
+TryGene_Sum$TP53 <- as.numeric(log10(TryGene_Sum$TP53)) #!!! We need to trans the factor to numeric in here
+
+
+ggplot_TryGene <- ggplot(data =TryGene_Sum, aes(x = ReCluster, y = TP53, fill =ReCluster))
+ggplot_TryGene  + geom_violin()+ 
+  #scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=90),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(TryGene_Sum$TP53), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 1, size = 3)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 0.9, size = 3)+      # Pairwise comparison against all
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+##
+TryGene <- TOP2A
+# TryGene <- c('TOP2A')
+TryGene_Sum <- as.data.frame(cbind(t(TryGene),ReCluster))
+
+TryGene_Sum$TOP2A <- as.numeric(TryGene_Sum$TOP2A) #!!! We need to trans the factor to numeric in here
+TryGene_Sum$TOP2A <- as.numeric(log10(TryGene_Sum$TOP2A)) #!!! We need to trans the factor to numeric in here
+
+
+ggplot_TryGene <- ggplot(data =TryGene_Sum, aes(x = ReCluster, y = TOP2A, fill =ReCluster))
+ggplot_TryGene  + geom_violin()+ 
+  #scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=90),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(TryGene_Sum$TOP2A), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 1.8, size = 3)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 1.7, size = 3)+      # Pairwise comparison against all
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+
+##
+TryGene <- CGAS
+# TryGene <- c('CGAS')
+TryGene_Sum <- as.data.frame(cbind(t(TryGene),ReCluster))
+
+TryGene_Sum$CGAS <- as.numeric(TryGene_Sum$CGAS) #!!! We need to trans the factor to numeric in here
+TryGene_Sum$CGAS <- as.numeric(log10(TryGene_Sum$CGAS)) #!!! We need to trans the factor to numeric in here
+
+
+ggplot_TryGene <- ggplot(data =TryGene_Sum, aes(x = ReCluster, y = CGAS, fill =ReCluster))
+ggplot_TryGene  + geom_violin()+ 
+  #scale_fill_manual(values = colors_cc) +
+  #      labs(title = "NP")+
+  theme(axis.text.x = element_text(face="bold", # color="#993333", 
+                                   size=10, angle=90),
+        axis.text.y = element_text(face="bold"),
+        axis.title.x = element_text(size = 14,face="bold"),
+        axis.title.y = element_text(size = 14,face="bold"))+
+  geom_hline(yintercept = mean(TryGene_Sum$CGAS), linetype = 2)+ # Add horizontal line at base mean
+  stat_compare_means(method = "anova", label.y = 1.2, size = 3)+        # Add global annova p-value
+  stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = ".all.", label.y = 1.1, size = 3)+      # Pairwise comparison against all
+  stat_summary(fun= mean, geom = "point",
+               shape = 23, size = 2, color = "blue")
+
+#################################/////////////////////////////////////////////////////////////////#####################################################
+#################################/////////////////////////////////////////////////////////////////#####################################################
 
 PDAC_Test1 <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData[["PDAC"]]
 PDAC_Test1p100 <- 1*PDAC_Test1
