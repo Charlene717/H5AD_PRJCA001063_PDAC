@@ -1,31 +1,40 @@
 ## (scRNA-seq data analysis for H5AD files)
 
 #############
-rm(list = ls()) # Clean variable
+  rm(list = ls()) # Clean variable
+  
+  memory.limit(150000)
+  set.seed(1) # Fsix the seeds
 
-memory.limit(150000)
-set.seed(1) # Fix the seed
 ############# Library list #############
-library(SummarizedExperiment)
-library(Seurat)
-library(SeuratDisk)
-library(stringr)
-library(SeuratWrappers)
-library(monocle3)
-library(AnnotationDbi)
-library(org.Mm.eg.db)
-library('org.Hs.eg.db')
-library(Hmisc)
-library(tidyverse)
-library(garnett)
-# library(cicero) # cicero中的monocle會和新版的monocle3衝突
-# detach("package:monocle", unload = TRUE) # 錯誤: package 'monocle' is required by 'cicero' so will not be detached
+  library(SummarizedExperiment)
+  library(Seurat)
+  library(SeuratDisk)
+  library(stringr)
+  library(SeuratWrappers)
+  library(monocle3)
+  library(AnnotationDbi)
+  library(org.Mm.eg.db)
+  library('org.Hs.eg.db')
+  library(Hmisc)
+  library(dplyr)
+  library(tidyverse)
+  library(garnett)
+# library(cicero) # cicero????monocle?|?M?s????monocle3?蘇?
+# detach("package:monocle", unload = TRUE) # ???~: package 'monocle' is required by 'cicero' so will not be detached
 
 ############# Import files settings #############
   ## General setting
-  PathName = setwd(getwd())
-  RVersion = "20210610V1"
-  dir.create(paste0(PathName,"/",RVersion))
+  ProjectName = "TOP2A"
+  Sampletype = "PDAC"
+  
+  PathName = paste0(Sys.Date(),"_",ProjectName,"_",Sampletype)
+  Save.Path = paste0(getwd(),"/",PathName)
+  ## Create new folder
+  if (!dir.exists(Save.Path)){
+    dir.create(Save.Path)
+  }
+  
   
   ## Marker genes file
   Garnett_Marker_file_Name <- c("NAKAMURA_METASTASIS_MODEL_M18483")
@@ -67,14 +76,14 @@ library(garnett)
   
   ## Call function
   filePath <- ""
-  #匯入 同一個資料夾中的R檔案
+  #?蚺J ?P?@?虒??ぃ?????R?仵?
   getFilePath <- function(fileName) {
-    # path <- setwd("~")  #專案資料夾絕對路徑
+    # path <- setwd("~")  #?M?袑??ぃ????????|
     path <- setwd(getwd()) 
-    #字串合併無間隔
-    # 「<<-」為全域變數給值的指派
+    #?r???X?硉L???j
+    # ?u<<-?v???????僂け??��?????
     filePath <<- paste0(path ,"/" , fileName)  
-    # 載入檔案
+    # ???J?仵?
     sourceObj <- source(filePath)
     return(sourceObj)
   }
@@ -133,6 +142,23 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     plot_cells(cds, color_cells_by = "cluster", label_cell_groups=FALSE, show_trajectory_graph = FALSE)
     plot_cells(cds, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
     
+    #####  #####
+    ## Plot the violin diagram
+    Maingroup_ciliated_genes <- c(Main_Group)
+    cds_marrow_cc <- cds[rowData(cds)$gene_short_name %in% Maingroup_ciliated_genes,]
+    cds_marrow_TOP2A <- cds[rowData(cds)$gene_short_name %in% "TOP2A",]
+    
+    plot_genes_violin(cds_marrow_cc, group_cells_by="Cell_type", ncol=2, log_scale = FALSE)
+    plot_genes_violin(cds_marrow_cc, group_cells_by="Cell_type", ncol=2, log_scale = T)
+    plot_genes_violin(cds_marrow_cc, group_cells_by="Cell_type", ncol=2, log_scale = T)+
+      geom_boxplot(width=0.1, fill="white",alpha = 0.7) + theme(axis.text.x=element_text(angle=45, hjust=1))
+    
+    source("FUN_Beautify_ggplot.R")
+    plot_genes_violin(cds_marrow_TOP2A, group_cells_by="Cell_type", ncol=2, log_scale = T) %>% 
+      BeautifyggPlot(AspRat=0.5,AxisTitleSize=2, xangle =90 ,OL_Thick = 3) +
+      geom_boxplot(width=0.1, fill="white",alpha = 0.7,TH= 10)
+    
+    
     ############ Cell-Cycle Scoring and Regression - Monocle3 & Seurat Mutual conversion #############
     
     ############# Run Seurat #############
@@ -146,11 +172,11 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     
         ###### Convert Monocle3 Object to Seurat Object ######
         getFilePath("Monocle3_To_Seurat.R")
-        marrow <- Monocle3_To_Seurat(cds,"cds") #這個function存在於Monocle3_To_Seurat.R裡面
+        marrow <- Monocle3_To_Seurat(cds,"cds") #?o??function?s?b??Monocle3_To_Seurat.R?怑?
         
         ###### Assign Cell-Cycle Scores ######
         getFilePath("Cell-Cycle Scoring and Regression.R")
-        marrow <- CCScorReg(GeneNAFMT,marrow) #這個function存在於Cell-Cycle Scoring and Regression.R裡面
+        marrow <- CCScorReg(GeneNAFMT,marrow) #?o??function?s?b??Cell-Cycle Scoring and Regression.R?怑?
         
         RidgePlot(marrow,cols = colors_cc, features = c(Main), ncol = 1)
         RidgePlot(marrow,cols = colors_cc, features = c(Main_Group), ncol = 2,y.max = 100) 
@@ -375,8 +401,12 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 marrow_sub_AcinaDucT_NewK_ReCluster@active.ident <- cds_sub_AcinaDucT_NewK_ReCluster@colData@listData$cell_cycle
                 RidgePlot(marrow_sub_AcinaDucT_NewK_ReCluster,cols = colors_cc, features = c(Main_Group), ncol = 2)
                 
-                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)
+                source("FUN_Beautify_UMAP.R")
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE)  %>% 
+                  BeautifyUMAP(LegTextSize = 12,LegPos = c(0.15, 0.15), XtextSize=15,  YtextSize=15)
                 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by="cell_cycle",cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) + scale_color_manual(values = colors_cc)
+                plot_cells(cds, genes=c("TOP2A"),cell_size=2, label_cell_groups=FALSE, show_trajectory_graph = FALSE) %>% 
+                           BeautifyUMAP(LegTextSize = 12,LegPos = c(0.15, 0.15), XtextSize=15,  YtextSize=15)
                 
                 ## Plot the violin diagram
                 Maingroup_ciliated_genes <- c(Main_Group)
@@ -458,6 +488,14 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
                 plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_ATR_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
                   scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
                                          guide = "colourbar",midpoint = 0.15, labs(fill = Marker_ATR_Name))
+                
+                Marker_HYPOXIA_file_Name <- c("M5891_HALLMARK_HYPOXIA")
+                Marker_HYPOXIA_Name <- c("HYPOXIA")
+                cds_sub_AcinaDucT_NewK_ReCluster <- Monocle3_AddModuleScore(Marker_HYPOXIA_file_Name,Marker_HYPOXIA_Name,
+                                                                            marrow_sub_AcinaDucT_NewK_ReCluster,cds_sub_AcinaDucT_NewK_ReCluster)
+                plot_cells(cds_sub_AcinaDucT_NewK_ReCluster, color_cells_by= Marker_HYPOXIA_Name, label_cell_groups=FALSE, show_trajectory_graph = FALSE,cell_size = 1.2) +
+                  scale_colour_gradient2(low = "darkblue", mid = "#f7c211", high = "green", 
+                                         guide = "colourbar",midpoint = 0.15, labs(fill = Marker_HYPOXIA_Name))
                 
 
                ####################### Constructing single-cell trajectories (AcinaDucT) #######################
@@ -564,7 +602,7 @@ cds <- as.cell_data_set(seuratObject) # Convert objects to Monocle3 'cell_data_s
     # cds_3d <- learn_graph(cds_3d)
     # # cds_3d <- order_cells(cds_3d, root_pr_nodes=get_earliest_principal_node(cds))
     # # # Error in get_earliest_principal_node(cds) : 
-    # # #   沒有這個函數 "get_earliest_principal_node"
+    # # #   ?S???o?茖??? "get_earliest_principal_node"
     # cds_3d <- order_cells(cds_3d)
     # 
     # cds_3d_plot_obj <- plot_cells_3d(cds_3d, color_cells_by="partition")
