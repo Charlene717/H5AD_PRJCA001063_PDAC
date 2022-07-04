@@ -132,22 +132,30 @@
   scRNA.SeuObj_Ref <- scRNA.SeuObj_1
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "Cell_type"
+  RefName2 = "DataSetID"
+  Remark1 <- "PredbyscRNA_CT"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
-  
-  scRNA.SeuObj <- scRNA.SeuObj_2
-  RefName = "ReCluster2"
-  source("CellTypeAnno_SingleR.R", encoding="UTF-8")
-  scRNA.SeuObj_2 <- scRNA.SeuObj
-  
   
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "Cell_type"
+  RefName2 = "DataSetID"
+  Remark1 <- "PredbyscRNA_CT"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
   
+  
+  scRNA.SeuObj <- scRNA.SeuObj_2
+  RefName = "ReCluster2"
+  RefName2 = "DataSetID"
+  Remark1 <- "PredbyscRNA_ReCl"
+  source("CellTypeAnno_SingleR.R", encoding="UTF-8")
+  scRNA.SeuObj_2 <- scRNA.SeuObj
+  
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "ReCluster2"
+  RefName2 = "DataSetID"
+  emark1 <- "PredbyscRNA_ReCl"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
   

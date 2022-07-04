@@ -89,7 +89,7 @@
                                    de.method = de.method,
                                    Remark = Remark, 
                                    RefName = "Cell_type",
-                                   RefName2 = "Cell_type",
+                                   RefName2 = RefName2,
                                    Save.Path = paste0(Save.Path,"/",Remark), ProjectName = "CT")
   scRNA.SeuObj <- SingleRResult.lt[["scRNA.SeuObj"]]
 
