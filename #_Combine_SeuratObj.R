@@ -87,14 +87,16 @@
   
   
   
-  ##### Function setting #####
+##### Function setting #####
   ## Call function
   source("FUN_Cal_Mit.R")
   source("FUN_CombineSeuObj.R")
   source("FUN_Beautify_ggplot.R")
+  source("FUN_Anno_SingleR.R")
   
   
-  ##### CombineSeuObj #####
+  
+##### CombineSeuObj #####
   scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
   rm(scRNA_SeuObj.list)
   
@@ -103,9 +105,9 @@
   scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
   # Run the standard workflow for visualization and clustering
   scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
-  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 1000, verbose = FALSE)
-  # scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
-  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:1000)
+  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 160, verbose = FALSE)
+  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
+  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:160)
   scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
   
   #### Save RData #####
@@ -113,18 +115,67 @@
   
   
   ##### Plot #####
-  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
   FeaturePlot(scRNA.SeuObj, features = c("TOP2A"))
-  DimPlot(scRNA.SeuObj, reduction = "umap")
+  # DimPlot(scRNA.SeuObj, reduction = "umap")
   DimPlot(scRNA.SeuObj, reduction = "umap",label = T)
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "DataSetID")
+  
+##### Cell Type Annotation #####  
+  scRNA.SeuObj@meta.data[["DataSetID"]] %>% unique()
+  scRNA.SeuObj_Ori <- scRNA.SeuObj
+  scRNA.SeuObj_1 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "PRJCA001063"]
+  DimPlot(scRNA.SeuObj_1, reduction = "umap",group.by = "Cell_type")
+  scRNA.SeuObj_2 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "GSE131886"]
+  scRNA.SeuObj_3 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "GSE154778"]
+  
+  scRNA.SeuObj_Ref <- scRNA.SeuObj_1
+  scRNA.SeuObj <- scRNA.SeuObj_2
+  RefName = "Cell_type"
+  source("CellTypeAnno_SingleR.R", encoding="UTF-8")
+  scRNA.SeuObj_2 <- scRNA.SeuObj
+  
+  scRNA.SeuObj <- scRNA.SeuObj_2
+  RefName = "ReCluster2"
+  source("CellTypeAnno_SingleR.R", encoding="UTF-8")
+  scRNA.SeuObj_2 <- scRNA.SeuObj
   
   
+  scRNA.SeuObj <- scRNA.SeuObj_3
+  RefName = "Cell_type"
+  source("CellTypeAnno_SingleR.R", encoding="UTF-8")
+  scRNA.SeuObj_3 <- scRNA.SeuObj
+  
+  scRNA.SeuObj <- scRNA.SeuObj_3
+  RefName = "ReCluster2"
+  source("CellTypeAnno_SingleR.R", encoding="UTF-8")
+  scRNA.SeuObj_3 <- scRNA.SeuObj
+  
+  
+  scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
+                            GSE131886 = scRNA.SeuObj_2,
+                            GSE154778 = scRNA.SeuObj_3) 
+  
+  scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
+  rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  
+  #### Re-dimension reduction ####
+  # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
+  scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
+  # Run the standard workflow for visualization and clustering
+  scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
+  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 1000, verbose = FALSE)
+  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
+  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:1000)
+  scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
+  
+  #### Save RData #####
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
   
 ##### Export figures #####
   ## Export TIFF
   for (i in seq(40,400,40)) {
-    for (j in seq(0.1,0.9,0.2)) {
+    for (j in seq(0.1,0.6,0.05)) {
       for (k in seq(20,800,60)) {
         try({
           set.seed(1)
