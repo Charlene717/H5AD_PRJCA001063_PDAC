@@ -133,39 +133,51 @@
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "Cell_type"
   RefName2 = "DataSetID"
-  Remark1 <- "PredbyscRNA_CT"
+  Remark1 <- "CT_GSE131886"         # "PredbyscRNA_CT_GSE131886"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
   
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "ReCluster2"
   RefName2 = "DataSetID"
-  Remark1 <- "PredbyscRNA_ReCl"
+  Remark1 <- "ReCl_GSE131886"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
+  
+  scRNA.SeuObj_2@meta.data[["Cell_type"]] <- scRNA.SeuObj_2@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
+  scRNA.SeuObj_2@meta.data[["celltype"]] <- scRNA.SeuObj_2@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
+  scRNA.SeuObj_2@meta.data[["ReCluster2"]] <- scRNA.SeuObj_2@meta.data[["singleR_PredbyscRNA_ReCl_classic_qua0.8_tun0.05_sd1"]]
   
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "Cell_type"
   RefName2 = "DataSetID"
-  Remark1 <- "PredbyscRNA_CT"
+  Remark1 <- "CT_GSE154778"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
 
-  
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "ReCluster2"
   RefName2 = "DataSetID"
-  Remark1 <- "PredbyscRNA_ReCl"
+  Remark1 <- "ReCl_GSE154778"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
   
+  scRNA.SeuObj_3@meta.data[["Cell_type"]] <- scRNA.SeuObj_3@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
+  scRNA.SeuObj_3@meta.data[["celltype"]] <- scRNA.SeuObj_3@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
+  scRNA.SeuObj_3@meta.data[["ReCluster2"]] <- scRNA.SeuObj_3@meta.data[["singleR_PredbyscRNA_ReCl_classic_qua0.8_tun0.05_sd1"]]
   
-  scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
-                            GSE131886 = scRNA.SeuObj_2,
-                            GSE154778 = scRNA.SeuObj_3) 
+
+  # scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
+  #                           GSE131886 = scRNA.SeuObj_2,
+  #                           GSE154778 = scRNA.SeuObj_3) 
+  # 
+  # scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
+  # rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
   
-  scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
-  rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  scRNA.SeuObj <- merge(scRNA.SeuObj_1, scRNA.SeuObj_2)
+  scRNA.SeuObj <- merge(scRNA.SeuObj, scRNA.SeuObj_3)
+  DefaultAssay(scRNA.SeuObj) <- "RNA"
+  rm(scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
   
   #### Re-dimension reduction ####
   # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
@@ -249,6 +261,12 @@
   
   #### Save RData #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_TryCondition.RData"))
+  
+  
+  ##### Session information #####
+    sessionInfo()
+    ## Ref: https://stackoverflow.com/questions/21967254/how-to-write-a-reader-friendly-sessioninfo-to-text-file
+    writeLines(capture.output(sessionInfo()), paste0(Save.Path,"/sessionInfo.txt"))
   
   
   
