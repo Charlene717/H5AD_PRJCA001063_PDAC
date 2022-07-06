@@ -172,12 +172,14 @@
   #                           GSE154778 = scRNA.SeuObj_3) 
   # 
   # scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
-  # rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  #### rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
   
   scRNA.SeuObj <- merge(scRNA.SeuObj_1, scRNA.SeuObj_2)
   scRNA.SeuObj <- merge(scRNA.SeuObj, scRNA.SeuObj_3)
   DefaultAssay(scRNA.SeuObj) <- "RNA"
-  rm(scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  # rm(scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  #### Save RData #####
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
   
   #### Re-dimension reduction ####
   # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
@@ -189,8 +191,11 @@
   scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:1000)
   scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
   
+  rm(scRNA.SeuObj_1, scRNA.SeuObj_2, scRNA.SeuObj_3, scRNA.SeuObj_Ref,
+     scRNA.SeuObj_Ori, CTFeatures.SeuObj,SingleRResult.lt)
+  
   #### Save RData #####
-  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR.RData"))
   
 ##### Export figures #####
   ## Export TIFF
