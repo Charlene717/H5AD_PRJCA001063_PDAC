@@ -174,10 +174,24 @@
   # scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
   #### rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
   
-  scRNA.SeuObj <- merge(scRNA.SeuObj_1, scRNA.SeuObj_2)
-  scRNA.SeuObj <- merge(scRNA.SeuObj, scRNA.SeuObj_3)
+  # scRNA.SeuObj <- merge(scRNA.SeuObj_1, scRNA.SeuObj_2)
+  # scRNA.SeuObj <- merge(scRNA.SeuObj, scRNA.SeuObj_3)
+  # DefaultAssay(scRNA.SeuObj) <- "RNA"
+  # # rm(scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  
+  scRNA.SeuObj <- scRNA.SeuObj_Ori
+  meta_ori.df <- scRNA.SeuObj@meta.data %>%
+                 dplyr::select(CELL)
+  
+  meta_ann.df <- rbind(scRNA.SeuObj_1@meta.data, 
+                       scRNA.SeuObj_2@meta.data,
+                       scRNA.SeuObj_3@meta.data)
+    
+  meta.df <-   dplyr::left_join(meta_ori.df,meta_ann.df)
+  scRNA.SeuObj@meta.data <- meta.df
   DefaultAssay(scRNA.SeuObj) <- "RNA"
-  # rm(scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
+  
+  rm(meta_ori.df, meta_ann.df, meta.df, scRNA.SeuObj_Ori)
   #### Save RData #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
   
