@@ -212,9 +212,9 @@
           print(p)
           graphics.off()
           
-          Idents(scRNA.SeuObj) <- scRNA.SeuObj@meta.data[["ReCluster"]]
+          Idents(scRNA.SeuObj) <- scRNA.SeuObj@meta.data[["ReCluster2"]]
           p <-  DimPlot(scRNA.SeuObj, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-            ggtitle(paste0("ReCluster","  PCA:",i,"  NNe:",k,"  MD:",j)) +
+            ggtitle(paste0("ReCluster2","  PCA:",i,"  NNe:",k,"  MD:",j)) +
             theme(plot.title = element_text(hjust = 0.5,vjust = 0))
           tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCA",i,"_NNe",k,"_MD",j,"_ReCluster.tiff"),
                width = 35, height = 20, units = "cm", res = 200)
