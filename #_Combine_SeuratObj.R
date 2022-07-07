@@ -137,16 +137,17 @@
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
   
+  scRNA.SeuObj_2@meta.data[["Cell_type"]] <- scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]]
+  scRNA.SeuObj_2@meta.data[["celltype"]] <- scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]]
+  
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "ReCluster2"
   RefName2 = "DataSetID"
   Remark1 <- "ReCl_GSE131886"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
-  
-  scRNA.SeuObj_2@meta.data[["Cell_type"]] <- scRNA.SeuObj_2@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
-  scRNA.SeuObj_2@meta.data[["celltype"]] <- scRNA.SeuObj_2@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
-  scRNA.SeuObj_2@meta.data[["ReCluster2"]] <- scRNA.SeuObj_2@meta.data[["singleR_PredbyscRNA_ReCl_classic_qua0.8_tun0.05_sd1"]]
+
+  scRNA.SeuObj_2@meta.data[["ReCluster2"]] <- scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]]
   
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "Cell_type"
@@ -154,17 +155,18 @@
   Remark1 <- "CT_GSE154778"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
-
+  
+  scRNA.SeuObj_3@meta.data[["Cell_type"]] <- scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]]
+  scRNA.SeuObj_3@meta.data[["celltype"]] <- scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]]
+  
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "ReCluster2"
   RefName2 = "DataSetID"
   Remark1 <- "ReCl_GSE154778"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
-  
-  scRNA.SeuObj_3@meta.data[["Cell_type"]] <- scRNA.SeuObj_3@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
-  scRNA.SeuObj_3@meta.data[["celltype"]] <- scRNA.SeuObj_3@meta.data[["singleR_PredbyscRNA_CT_classic_qua0.8_tun0.05_sd1"]]
-  scRNA.SeuObj_3@meta.data[["ReCluster2"]] <- scRNA.SeuObj_3@meta.data[["singleR_PredbyscRNA_ReCl_classic_qua0.8_tun0.05_sd1"]]
+
+  scRNA.SeuObj_3@meta.data[["ReCluster2"]] <- scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]]
   
 
   # scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
@@ -191,7 +193,8 @@
   scRNA.SeuObj@meta.data <- meta.df
   DefaultAssay(scRNA.SeuObj) <- "RNA"
   
-  rm(meta_ori.df, meta_ann.df, meta.df, scRNA.SeuObj_Ori)
+  rm(meta_ori.df, meta_ann.df, meta.df, scRNA.SeuObj_Ori,
+     SingleRResult.lt, CTFeatures.SeuObj)
   #### Save RData #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
   
