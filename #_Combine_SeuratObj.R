@@ -139,6 +139,7 @@
   
   scRNA.SeuObj_2@meta.data[["Cell_type"]] <- scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]]
   scRNA.SeuObj_2@meta.data[["celltype"]] <- scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]]
+  scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]] <- NULL
   
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "ReCluster2"
@@ -148,6 +149,7 @@
   scRNA.SeuObj_2 <- scRNA.SeuObj
 
   scRNA.SeuObj_2@meta.data[["ReCluster2"]] <- scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]]
+  scRNA.SeuObj_2@meta.data[[paste0("singleR_",Remark)]] <- NULL
   
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "Cell_type"
@@ -158,6 +160,7 @@
   
   scRNA.SeuObj_3@meta.data[["Cell_type"]] <- scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]]
   scRNA.SeuObj_3@meta.data[["celltype"]] <- scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]]
+  scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]] <- NULL
   
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "ReCluster2"
@@ -167,7 +170,7 @@
   scRNA.SeuObj_3 <- scRNA.SeuObj
 
   scRNA.SeuObj_3@meta.data[["ReCluster2"]] <- scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]]
-  
+  scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]] <- NULL
 
   # scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
   #                           GSE131886 = scRNA.SeuObj_2,
