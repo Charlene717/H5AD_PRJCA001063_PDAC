@@ -21,7 +21,7 @@ colors_cc <-c("#FF9912B3", "#2e6087", "#417034")  ## Color for Cell-Cycle
 
 annotation_col <- as.data.frame(cbind(cell_cycle,ReCluster))
 ggplot(annotation_col, aes(x = ReCluster, fill = cell_cycle)) + 
-  geom_bar(position = "fill")+
+  geom_bar(position = "fill") +
   theme(axis.text.x = element_text(face="bold", # color="#993333", 
                                    size=10, angle=75,vjust =0.55),
         axis.text.y = element_text(face="bold",hjust =-8),
@@ -178,7 +178,7 @@ ggplot(GeneExpMatrix_DF5_TOP2A_F_t, aes(x = ReCluster, fill = cell_cycle)) +
         legend.title = element_text(size=13, color = "black", face="bold"),
         legend.text = element_text(colour="black", size=12,face="bold"))+ 
   scale_fill_manual(values = colors_cc)+ 
-  ggtitle("TOP2A > 0")+ 
+  ggtitle("TOP2A = 0")+ 
   theme(plot.title = element_text(size = 18,vjust = 0.5,hjust = 0.5)
   )
 
@@ -195,7 +195,7 @@ ggplot(GeneExpMatrix_DF5_TOP2A_F_t, aes(x = ReCluster, fill = cell_cycle))+
         legend.title = element_text(size=13, color = "black", face="bold"),
         legend.text = element_text(colour="black", size=12,face="bold"))+ 
   scale_fill_manual(values = colors_cc)+ 
-  ggtitle("TOP2A > 0")+ 
+  ggtitle("TOP2A = 0")+ 
   theme(plot.title = element_text(size = 18, vjust = 0.5,hjust = 0.5)
   )
 
@@ -211,7 +211,7 @@ ggplot(GeneExpMatrix_DF5_TOP2A_F_t, aes(x = ReCluster, fill = cell_cycle))+
         legend.title = element_text(size=13, color = "black", face="bold"),
         legend.text = element_text(colour="black", size=12,face="bold"))+ 
   scale_fill_manual(values = colors_cc)+ 
-  ggtitle("TOP2A > 0")+ 
+  ggtitle("TOP2A = 0")+ 
   theme(plot.title = element_text(size = 18, vjust = 0.5,hjust = 0.5)
   )
 
