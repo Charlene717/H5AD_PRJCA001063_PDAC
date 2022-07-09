@@ -185,16 +185,23 @@
   # # rm(scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
   
   scRNA.SeuObj <- scRNA.SeuObj_Ori
-  meta_ori.df <- scRNA.SeuObj@meta.data %>%
-                 dplyr::select(CELL)
+  # meta_ori.df <- scRNA.SeuObj@meta.data %>%
+  #                dplyr::select(CELL)
+  # 
+  # meta_ann.df <- rbind(scRNA.SeuObj_1@meta.data, 
+  #                      scRNA.SeuObj_2@meta.data,
+  #                      scRNA.SeuObj_3@meta.data)
+  #   
+  # meta.df <-   dplyr::left_join(meta_ori.df,meta_ann.df)
+  # scRNA.SeuObj@meta.data <- meta.df
   
   meta_ann.df <- rbind(scRNA.SeuObj_1@meta.data, 
                        scRNA.SeuObj_2@meta.data,
                        scRNA.SeuObj_3@meta.data)
-    
-  meta.df <-   dplyr::left_join(meta_ori.df,meta_ann.df)
-  scRNA.SeuObj@meta.data <- meta.df
+  scRNA.SeuObj@meta.data <- meta_ann.df
   DefaultAssay(scRNA.SeuObj) <- "RNA"
+  DimPlot(scRNA.SeuObj_1, reduction = "umap",group.by = "Cell_type")
+  DimPlot(scRNA.SeuObj_1, reduction = "umap",group.by = "ReCluster2")
   
   rm(meta_ori.df, meta_ann.df, meta.df, scRNA.SeuObj_Ori,
      SingleRResult.lt, CTFeatures.SeuObj)
