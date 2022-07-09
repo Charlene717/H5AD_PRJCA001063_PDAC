@@ -105,7 +105,7 @@
   scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
   # Run the standard workflow for visualization and clustering
   scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
-  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 160, verbose = FALSE)
+  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 1000, verbose = FALSE)
   scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
   scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:160)
   scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
@@ -210,16 +210,16 @@
   #### Save RData #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
   
-  #### Re-dimension reduction ####
-  DefaultAssay(scRNA.SeuObj) <- "integrated"
-  # # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
-  scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
-  # Run the standard workflow for visualization and clustering
-  scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
-  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 10, verbose = FALSE)
-  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:10,n.neighbors = 20,min.dist = 0.3)
-  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:10)
-  scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
+  # #### Re-dimension reduction ####
+  # DefaultAssay(scRNA.SeuObj) <- "integrated"
+  # # # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
+  # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
+  # # Run the standard workflow for visualization and clustering
+  # scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
+  # scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 10, verbose = FALSE)
+  # scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:10,n.neighbors = 20,min.dist = 0.3)
+  # scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:10)
+  # scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
   
   rm(scRNA.SeuObj_1, scRNA.SeuObj_2, scRNA.SeuObj_3, scRNA.SeuObj_Ref,
      scRNA.SeuObj_Ori, CTFeatures.SeuObj,SingleRResult.lt)
