@@ -200,8 +200,10 @@
                        scRNA.SeuObj_3@meta.data)
   scRNA.SeuObj@meta.data <- meta_ann.df
   DefaultAssay(scRNA.SeuObj) <- "RNA"
-  DimPlot(scRNA.SeuObj_1, reduction = "umap",group.by = "Cell_type")
-  DimPlot(scRNA.SeuObj_1, reduction = "umap",group.by = "ReCluster2")
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "ReCluster2")
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "DataSetID")
+  DimPlot(scRNA.SeuObj, reduction = "umap")
   
   rm(meta_ori.df, meta_ann.df, meta.df, scRNA.SeuObj_Ori,
      SingleRResult.lt, CTFeatures.SeuObj)
@@ -209,13 +211,14 @@
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno.RData"))
   
   #### Re-dimension reduction ####
-  # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
+  DefaultAssay(scRNA.SeuObj) <- "integrated"
+  # # scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj, selection.method = "vst", nfeatures = 2000)
   scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
   # Run the standard workflow for visualization and clustering
   scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
-  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 1000, verbose = FALSE)
-  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
-  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:1000)
+  scRNA.SeuObj <- RunPCA(scRNA.SeuObj, npcs = 10, verbose = FALSE)
+  scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, reduction = "pca", dims = 1:10,n.neighbors = 20,min.dist = 0.3)
+  scRNA.SeuObj <- FindNeighbors(scRNA.SeuObj, reduction = "pca", dims = 1:10)
   scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 0.5)
   
   rm(scRNA.SeuObj_1, scRNA.SeuObj_2, scRNA.SeuObj_3, scRNA.SeuObj_Ref,
