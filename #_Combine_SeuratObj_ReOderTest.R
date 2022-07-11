@@ -10,25 +10,24 @@
   
 #### Load data #####
   load("D:/Dropbox/##_GitHub/#_scRNADataset/SeuratObject_CDS_PRJCA001063.RData")
-  scRNA.SeuObj_1 <- scRNA.SeuObj  
+  scRNA.SeuObj_1 <- scRNA.SeuObj 
   
-  load("D:/Dropbox/##_GitHub/#_scRNADataset/SeuratObject_GSE131886_PDC_SC.RData")
+  load("D:/Dropbox/##_GitHub/#_scRNADataset/SeuratObject_GSE154778_PDAC_SC.RData")
   scRNA.SeuObj_2 <- scRNA.SeuObj  
   DefaultAssay(scRNA.SeuObj_2) <- "RNA"
   
-  
-  load("D:/Dropbox/##_GitHub/#_scRNADataset/SeuratObject_GSE154778_PDAC_SC.RData")
+  load("D:/Dropbox/##_GitHub/#_scRNADataset/SeuratObject_GSE131886_PDC_SC.RData")
   scRNA.SeuObj_3 <- scRNA.SeuObj  
   DefaultAssay(scRNA.SeuObj_3) <- "RNA"
   
   scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
-                            GSE131886 = scRNA.SeuObj_2,
-                            GSE154778 = scRNA.SeuObj_3) 
+                            GSE154778 = scRNA.SeuObj_2,
+                            GSE131886 = scRNA.SeuObj_3) 
   
   rm(list=setdiff(ls(), "scRNA_SeuObj.list"))
   
 ##### Current path and new folder setting* #####
-  ProjectName = "Com"
+  ProjectName = "Com_ReOderTest"
   Sampletype = "PDAC"
   #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
   
@@ -126,14 +125,14 @@
   scRNA.SeuObj_Ori <- scRNA.SeuObj
   scRNA.SeuObj_1 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "PRJCA001063"]
   DimPlot(scRNA.SeuObj_1, reduction = "umap",group.by = "Cell_type")
-  scRNA.SeuObj_2 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "GSE131886"]
-  scRNA.SeuObj_3 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "GSE154778"]
+  scRNA.SeuObj_2 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "GSE154778"]
+  scRNA.SeuObj_3 <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["DataSetID"]] %in% "GSE131886"]
   
   scRNA.SeuObj_Ref <- scRNA.SeuObj_1
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "Cell_type"
   RefName2 = "DataSetID"
-  Remark1 <- "CT_GSE131886"         # "PredbyscRNA_CT_GSE131886"
+  Remark1 <- "CT_GSE154778"         # "PredbyscRNA_CT_GSE154778"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
   
@@ -144,7 +143,7 @@
   scRNA.SeuObj <- scRNA.SeuObj_2
   RefName = "ReCluster2"
   RefName2 = "DataSetID"
-  Remark1 <- "ReCl_GSE131886"
+  Remark1 <- "ReCl_GSE154778"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_2 <- scRNA.SeuObj
 
@@ -154,7 +153,7 @@
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "Cell_type"
   RefName2 = "DataSetID"
-  Remark1 <- "CT_GSE154778"
+  Remark1 <- "CT_GSE131886"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
   
@@ -165,7 +164,7 @@
   scRNA.SeuObj <- scRNA.SeuObj_3
   RefName = "ReCluster2"
   RefName2 = "DataSetID"
-  Remark1 <- "ReCl_GSE154778"
+  Remark1 <- "ReCl_GSE131886"
   source("CellTypeAnno_SingleR.R", encoding="UTF-8")
   scRNA.SeuObj_3 <- scRNA.SeuObj
 
@@ -173,8 +172,8 @@
   scRNA.SeuObj_3@meta.data[[paste0("singleR_",Remark)]] <- NULL
 
   # scRNA_SeuObj.list <- list(PRJCA001063 = scRNA.SeuObj_1,
-  #                           GSE131886 = scRNA.SeuObj_2,
-  #                           GSE154778 = scRNA.SeuObj_3) 
+  #                           GSE154778 = scRNA.SeuObj_2,
+  #                           GSE131886 = scRNA.SeuObj_3) 
   # 
   # scRNA.SeuObj <- CombineSeuObj(scRNA_SeuObj.list)
   #### rm(scRNA_SeuObj.list,scRNA.SeuObj_1,scRNA.SeuObj_2,scRNA.SeuObj_3,scRNA.SeuObj_Ref)
