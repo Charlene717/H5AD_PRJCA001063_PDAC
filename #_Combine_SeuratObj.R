@@ -229,9 +229,9 @@
   
 ##### Export figures #####
   ## Export TIFF
-  for (i in seq(40,400,40)) {
-    for (j in seq(0.1,0.6,0.05)) {
-      for (k in seq(20,800,60)) {
+  for (i in seq(50,400,50)) {
+    for (j in seq(0.1,0.7,0.2)) {
+      for (k in seq(20,300,40)) {
         try({
           set.seed(1)
           scRNA.SeuObj <- RunUMAP(scRNA.SeuObj, dims = 1:i,n.neighbors = k, min.dist= j)
