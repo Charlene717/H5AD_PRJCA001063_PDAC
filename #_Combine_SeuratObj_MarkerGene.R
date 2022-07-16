@@ -1,3 +1,6 @@
+## Load Rdata
+  load("D:/Dropbox/##_GitHub/##_PHH_Lab/#_H5AD_PRJCA001063_PDAC/2022-07-14_Com_ReOderTest_PDAC/scRNA.SeuObj_CDS_PRJCA001063_Combine_TryCondition.RData")
+
 ##### Plot #####
 FeaturePlot(scRNA.SeuObj, features = c("TOP2A"))
 # DimPlot(scRNA.SeuObj, reduction = "umap")
