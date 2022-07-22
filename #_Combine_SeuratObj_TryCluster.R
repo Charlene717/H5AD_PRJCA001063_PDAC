@@ -233,6 +233,7 @@
     for (j in seq(0.1,0.7,0.2)) {
       for (k in seq(20,300,40)) {
         try({
+          DefaultAssay(scRNA.SeuObj) <- "integrated"
           set.seed(1)
           scRNA.SeuObj <- FindVariableFeatures(scRNA.SeuObj)
           scRNA.SeuObj <- ScaleData(scRNA.SeuObj, verbose = FALSE)
