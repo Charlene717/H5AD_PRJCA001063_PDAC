@@ -18,7 +18,8 @@
   library(tidyverse)
   scRNA.SeuObj@meta.data[["Cell_type"]] %>% unique()
   scRNA_Sub.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% "Macrophage cell"]
-
+  DimPlot(scRNA_Sub.SeuObj, reduction = "umap",group.by = "Cell_type")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  
 ##### Extract gene matrix #####
   scRNA_Sub.MT <- scRNA_Sub.SeuObj@assays[["RNA"]]@counts %>% 
                   as.data.frame() %>% t() %>% as.data.frame()

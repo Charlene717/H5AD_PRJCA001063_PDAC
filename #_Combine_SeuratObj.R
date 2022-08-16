@@ -115,11 +115,12 @@
   
   
   ##### Plot #####
-  FeaturePlot(scRNA.SeuObj, features = c("TOP2A"))
+  FeaturePlot(scRNA.SeuObj, features = c("TOP2A")) %>% BeautifyggPlot(.,LegPos = c(0.1, 0.2))
+  FeaturePlot(scRNA.SeuObj, features = c("MARCO")) %>% BeautifyggPlot(.,LegPos = c(0.1, 0.2))
   # DimPlot(scRNA.SeuObj, reduction = "umap")
-  DimPlot(scRNA.SeuObj, reduction = "umap",label = T)
-  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")
-  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "DataSetID")
+  DimPlot(scRNA.SeuObj, reduction = "umap",label = T) %>% BeautifyggPlot(.,LegPos = c(1, 0.5))
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "DataSetID")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
   
 ##### Cell Type Annotation #####  
   scRNA.SeuObj@meta.data[["DataSetID"]] %>% unique()
