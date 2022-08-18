@@ -22,7 +22,7 @@ VolcanoPlot <- function(Marker.df, Pos.List, Neg.List,
     # redefine levels:
     # Marker.df2$genelabels <- factor(Marker.df2$Gene, levels = c(Pos.List,Neg.List))
     
-    if (length(Pos.List)>=ShowGeneNum && length(Neg.List)>=ShowGeneNum) {
+    if (length(Pos.List) >= ShowGeneNum && length(Neg.List) >= ShowGeneNum) {
         Marker.df2$genelabels <- factor(Marker.df2$Gene, 
                                         levels = c(Pos.List[1:ShowGeneNum],
                                                    Neg.List[(length(Neg.List)-(ShowGeneNum-1)):length(Neg.List)]))
