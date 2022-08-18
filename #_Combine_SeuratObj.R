@@ -117,10 +117,15 @@
   ##### Plot #####
   FeaturePlot(scRNA.SeuObj, features = c("TOP2A")) %>% BeautifyggPlot(.,LegPos = c(0.1, 0.2))
   FeaturePlot(scRNA.SeuObj, features = c("MARCO")) %>% BeautifyggPlot(.,LegPos = c(0.1, 0.2))
+  FeaturePlot(scRNA.SeuObj, features = c("CD24", "CD44", "EPCAM" , "NOTCH2"))
+  FeaturePlot(scRNA.SeuObj, features = c("CD74")) %>% BeautifyggPlot(.,LegPos = c(0.1, 0.2))
   # DimPlot(scRNA.SeuObj, reduction = "umap")
   DimPlot(scRNA.SeuObj, reduction = "umap",label = T) %>% BeautifyggPlot(.,LegPos = c(1, 0.5))
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "DataSetID")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "CONDITION")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "cell_cycle")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
   
 ##### Cell Type Annotation #####  
   scRNA.SeuObj@meta.data[["DataSetID"]] %>% unique()
