@@ -22,34 +22,36 @@
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "cell_cycle")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
   
-##### Recluster #####
-  # Seurat re-clustering a cell subset but cell identity numbers are not completely showing up
-  # https://www.biostars.org/p/9485834/#9486162
-  DefaultAssay(scRNA.SeuObj) <- "integrated"
-  scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 2)
-  
-  ## Plot
-  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
+# ##### Recluster #####
+#   # Seurat re-clustering a cell subset but cell identity numbers are not completely showing up
+#   # https://www.biostars.org/p/9485834/#9486162
+#   DefaultAssay(scRNA.SeuObj) <- "integrated"
+#   scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 2)
+#   
+#   ## Plot
+#   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
   
 ##### Extract macrophage #####
   scRNA_Mac.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% "Macrophage cell"]
   # # subset Seurat to only Macrophage cell
   # scRNA_Mac.SeuObj <- subset(x = ,scRNA.SeuObj, idents = "Macrophage cell")
   
+  DefaultAssay(scRNA_Mac.SeuObj) <- "integrated"
   scRNA_Mac.SeuObj <- FindVariableFeatures(scRNA_Mac.SeuObj)
   scRNA_Mac.SeuObj <- ScaleData(scRNA_Mac.SeuObj, verbose = FALSE)
-  scRNA_Mac.SeuObj <- RunPCA(scRNA_Mac.SeuObj, npcs = 160, verbose = FALSE)
+  scRNA_Mac.SeuObj <- RunPCA(scRNA_Mac.SeuObj, npcs = 300, verbose = FALSE)
   # scRNA_Mac.SeuObj <- RunUMAP(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
-  scRNA_Mac.SeuObj <- RunUMAP(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
+  scRNA_Mac.SeuObj <- RunUMAP(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:300,n.neighbors = 30,min.dist = 0.3)
   
-  scRNA_Mac.SeuObj <- FindNeighbors(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:160)
+  scRNA_Mac.SeuObj <- FindNeighbors(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:300)
   scRNA_Mac.SeuObj <- FindClusters(scRNA_Mac.SeuObj, resolution = 0.2)
   DimPlot(scRNA_Mac.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
   FeaturePlot(scRNA_Mac.SeuObj, features = c("MARCO")) %>% BeautifyggPlot(.,LegPos = c(0.05, 0.2))
+  FeaturePlot(scRNA_Mac.SeuObj, features = c("IL1B")) %>% BeautifyggPlot(.,LegPos = c(0.05, 0.2))
   
   scRNA_Mac.SeuObj <- RenameIdents(scRNA_Mac.SeuObj, `0` = "MarcoP", `1` = "MarcoN", `2` = "MarcoN",
                                `3` = "MarcoP", `4` = "MarcoP", `5` = "MarcoN", `6` = "MarcoN")
-  DimPlot(scRNA_Mac.SeuObj, reduction = "umap")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
+  DimPlot(scRNA_Mac.SeuObj, reduction = "umap")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.9))
   
 ##### Volcano plot #####  
   scRNA_Mac.SeuObj$MarcoType <- Idents(scRNA_Mac.SeuObj)
@@ -66,5 +68,12 @@
               log2FC = 0.5,PValue = 0.05,
               ShowGeneNum = 10
               ) + 
-    ggtitle(paste0("MarcoP vs. MarcoN"))
+              ggtitle(paste0("MarcoP vs. MarcoN")) -> Plot.Volcano
+  Plot.Volcano
+  
+  tiff(file = paste0("FindMarkers/","Marco.tif"), width = 17, height = 17, units = "cm", res = 200)
+    print(Plot.Volcano)
+  graphics.off()
+
+
   
