@@ -22,16 +22,19 @@
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "cell_cycle")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
   
-# ##### Recluster #####
-#   # Seurat re-clustering a cell subset but cell identity numbers are not completely showing up
-#   # https://www.biostars.org/p/9485834/#9486162
-#   DefaultAssay(scRNA.SeuObj) <- "integrated"
-#   scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 2)
-#   
-#   ## Plot
-#   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
+##### Recluster #####
+  # Seurat re-clustering a cell subset but cell identity numbers are not completely showing up
+  # https://www.biostars.org/p/9485834/#9486162
+  DefaultAssay(scRNA.SeuObj) <- "integrated"
+  scRNA.SeuObj <- FindClusters(scRNA.SeuObj, resolution = 2)
+
+  ## Plot
+  DefaultAssay(scRNA.SeuObj) <- "RNA"
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
+  FeaturePlot(scRNA.SeuObj, features = c("MARCO")) %>% BeautifyggPlot(.,LegPos = c(0.1, 0.2))
   
-##### Extract macrophage #####
+
+##### Extract macrophage 2 ReDR & Recluster #####
   scRNA_Mac.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% "Macrophage cell"]
   # # subset Seurat to only Macrophage cell
   # scRNA_Mac.SeuObj <- subset(x = ,scRNA.SeuObj, idents = "Macrophage cell")
