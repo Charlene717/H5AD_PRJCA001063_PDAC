@@ -42,12 +42,14 @@
   DefaultAssay(scRNA_Mac.SeuObj) <- "integrated"
   scRNA_Mac.SeuObj <- FindVariableFeatures(scRNA_Mac.SeuObj)
   scRNA_Mac.SeuObj <- ScaleData(scRNA_Mac.SeuObj, verbose = FALSE)
-  scRNA_Mac.SeuObj <- RunPCA(scRNA_Mac.SeuObj, npcs = 300, verbose = FALSE)
+  scRNA_Mac.SeuObj <- RunPCA(scRNA_Mac.SeuObj, npcs = 160, verbose = FALSE)
   # scRNA_Mac.SeuObj <- RunUMAP(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
-  scRNA_Mac.SeuObj <- RunUMAP(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:300,n.neighbors = 30,min.dist = 0.3)
+  scRNA_Mac.SeuObj <- RunUMAP(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:160,n.neighbors = 20,min.dist = 0.3)
   
-  scRNA_Mac.SeuObj <- FindNeighbors(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:300)
+  scRNA_Mac.SeuObj <- FindNeighbors(scRNA_Mac.SeuObj, reduction = "pca", dims = 1:160)
   scRNA_Mac.SeuObj <- FindClusters(scRNA_Mac.SeuObj, resolution = 0.2)
+  
+  DefaultAssay(scRNA_Mac.SeuObj) <- "RNA"
   DimPlot(scRNA_Mac.SeuObj, reduction = "umap",group.by = "seurat_clusters")  %>% BeautifyggPlot(.,LegPos = c(1.05, 0.5))
   FeaturePlot(scRNA_Mac.SeuObj, features = c("MARCO")) %>% BeautifyggPlot(.,LegPos = c(0.05, 0.2))
   FeaturePlot(scRNA_Mac.SeuObj, features = c("IL1B")) %>% BeautifyggPlot(.,LegPos = c(0.05, 0.2))
