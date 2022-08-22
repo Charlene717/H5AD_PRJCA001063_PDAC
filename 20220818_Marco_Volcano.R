@@ -85,7 +85,7 @@
   
 ##### Cell-cell interaction #####
   
-  ## MarcoType
+  #### MarcoType ####
   source("FUN_CellChatOne.R")
   # scRNA_Mac.SeuObj@meta.data[["Clusters"]] <- as.character(scRNA_Mac.SeuObj@meta.data[["seurat_clusters"]])
   
@@ -109,6 +109,36 @@
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "MarcoType",species = "Human"
   ) -> CellChat_Secret.lt
+  
+  
+  #### All cell type ####
+  
+  scRNA_Mac.SeuObj@meta.data[["Cell_type2"]] <- as.character(scRNA_Mac.SeuObj@meta.data[["MarcoType"]])
+  
+  scRNA.SeuObj@meta.data[["Cell_type2"]] <- scRNA.SeuObj@meta.data[["Cell_type"]]
+  
+  # ## Try
+  # colData(cds)[colnames(cds_subset),]$assigned_cell_type <- colData(cds_subset)$assigned_cell_type
+  # library(SummarizedExperiment)
+  # colData(scRNA.SeuObj)[colnames(scRNA_Mac.SeuObj),]$Cell_type2 <- colData(scRNA_Mac.SeuObj)$Cell_type2
+  # 
+  # scRNA.SeuObj[,colnames(scRNA_Mac.SeuObj)]$Cell_type2 <- scRNA_Mac.SeuObj$Cell_type2
+  
+  scRNA_NMac.SeuObj <- scRNA.SeuObj[,!scRNA.SeuObj@meta.data[["Cell_type"]] %in% "Macrophage cell"]
+  scRNA_Mac2.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj@meta.data[["Cell_type"]] %in% "Macrophage cell"]
+  scRNA_Mac2.SeuObj@meta.data[["Cell_type2"]] <- scRNA_Mac.SeuObj@meta.data[["Cell_type2"]]
+  
+  combined <- merge(
+    x = scRNA_NMac.SeuObj,
+    y = scRNA_Mac2.SeuObj,
+    merge.data = F
+    # add.cell.ids = c("All", "Mac")
+  )
+  
+  combined@commands <- scRNA.SeuObj@commands
+  combined@graphs <- scRNA.SeuObj@graphs
+  combined@reductions <- scRNA.SeuObj@reductions
+  DimPlot(combined, reduction = "umap",group.by = "Cell_type2")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
   
   ##### save.image #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR_Marco.RData"))
