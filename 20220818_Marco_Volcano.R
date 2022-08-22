@@ -111,7 +111,7 @@
   ) -> CellChat_Secret_Mac.lt
   
   
-  #### All cell type ####
+#### All cell type ####
   
   scRNA_Mac.SeuObj@meta.data[["Cell_type2"]] <- as.character(scRNA_Mac.SeuObj@meta.data[["MarcoType"]])
   scRNA.SeuObj@meta.data[["Cell_type2"]] <- scRNA.SeuObj@meta.data[["Cell_type"]]
@@ -144,22 +144,22 @@
   
   
   ## ECM-Receptor
-  CellChatOne(scRNA_Mac.SeuObj,
-              signalingtype = "ECM-Receptor", projectName = "ECM",
+  CellChatOne(scRNA.SeuObj,
+              signalingtype = "ECM-Receptor", projectName = "ECM_All",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "Cell_type2",species = "Human"
   ) ->   CellChat_ECM.lt
   
   ## Cell-Cell Contact
-  CellChatOne(scRNA_Mac.SeuObj,
-              signalingtype = "Cell-Cell Contact", projectName = "CC",
+  CellChatOne(scRNA.SeuObj,
+              signalingtype = "Cell-Cell Contact", projectName = "CC_All",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "Cell_type2",species = "Human"
   ) -> CellChat_CC.lt
   
   ## Secreted Signaling
-  CellChatOne(scRNA_Mac.SeuObj,
-              signalingtype = "Secreted Signaling", projectName = "Secret",
+  CellChatOne(scRNA.SeuObj,
+              signalingtype = "Secreted Signaling", projectName = "Secret_All",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "Cell_type2",species = "Human"
   ) -> CellChat_Secret.lt
