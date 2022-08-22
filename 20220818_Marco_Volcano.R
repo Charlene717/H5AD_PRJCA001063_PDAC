@@ -56,6 +56,8 @@
   
   scRNA_Mac.SeuObj <- RenameIdents(scRNA_Mac.SeuObj, `0` = "MarcoP", `1` = "MarcoN", `2` = "MarcoN",
                                `3` = "MarcoP", `4` = "MarcoP", `5` = "MarcoN", `6` = "MarcoN")
+  scRNA_Mac.SeuObj$MarcoType <- Idents(scRNA_Mac.SeuObj)
+  
   DimPlot(scRNA_Mac.SeuObj, reduction = "umap")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.9))
   
 ##### Volcano plot #####  
@@ -80,5 +82,31 @@
     print(Plot.Volcano)
   graphics.off()
 
-
+  
+##### Cell-cell interaction #####
+  source("FUN_CellChatOne.R")
+  ## ECM-Receptor
+  CellChatOne(scRNA_Mac.SeuObj,
+              signalingtype = "ECM-Receptor", projectName = "ECM",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "seurat_clusters",species = "Human"
+  ) ->   CellChat_ECM.lt
+  
+  ## Cell-Cell Contact
+  CellChatOne(scRNA_Mac.SeuObj,
+              signalingtype = "Cell-Cell Contact", projectName = "CC",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "seurat_clusters",species = "Human"
+  ) -> CellChat_CC.lt
+  
+  ## Secreted Signaling
+  CellChatOne(scRNA_Mac.SeuObj,
+              signalingtype = "Secreted Signaling", projectName = "Secret",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "seurat_clusters",species = "Human"
+  ) -> CellChat_Secret.lt
+  
+  ##### save.image #####
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR_Marco.RData"))
+  
   
