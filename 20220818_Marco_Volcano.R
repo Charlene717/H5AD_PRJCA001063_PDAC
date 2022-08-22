@@ -84,26 +84,30 @@
 
   
 ##### Cell-cell interaction #####
+  
+  ## MarcoType
   source("FUN_CellChatOne.R")
+  # scRNA_Mac.SeuObj@meta.data[["Clusters"]] <- as.character(scRNA_Mac.SeuObj@meta.data[["seurat_clusters"]])
+  
   ## ECM-Receptor
   CellChatOne(scRNA_Mac.SeuObj,
               signalingtype = "ECM-Receptor", projectName = "ECM",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-              groupby = "seurat_clusters",species = "Human"
+              groupby = "MarcoType",species = "Human"
   ) ->   CellChat_ECM.lt
   
   ## Cell-Cell Contact
   CellChatOne(scRNA_Mac.SeuObj,
               signalingtype = "Cell-Cell Contact", projectName = "CC",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-              groupby = "seurat_clusters",species = "Human"
+              groupby = "MarcoType",species = "Human"
   ) -> CellChat_CC.lt
   
   ## Secreted Signaling
   CellChatOne(scRNA_Mac.SeuObj,
               signalingtype = "Secreted Signaling", projectName = "Secret",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
-              groupby = "seurat_clusters",species = "Human"
+              groupby = "MarcoType",species = "Human"
   ) -> CellChat_Secret.lt
   
   ##### save.image #####
