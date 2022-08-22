@@ -94,27 +94,26 @@
               signalingtype = "ECM-Receptor", projectName = "ECM",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "MarcoType",species = "Human"
-  ) ->   CellChat_ECM.lt
+  ) ->   CellChat_ECM_Mac.lt
   
   ## Cell-Cell Contact
   CellChatOne(scRNA_Mac.SeuObj,
               signalingtype = "Cell-Cell Contact", projectName = "CC",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "MarcoType",species = "Human"
-  ) -> CellChat_CC.lt
+  ) -> CellChat_CC_Mac.lt
   
   ## Secreted Signaling
   CellChatOne(scRNA_Mac.SeuObj,
               signalingtype = "Secreted Signaling", projectName = "Secret",
               save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
               groupby = "MarcoType",species = "Human"
-  ) -> CellChat_Secret.lt
+  ) -> CellChat_Secret_Mac.lt
   
   
   #### All cell type ####
   
   scRNA_Mac.SeuObj@meta.data[["Cell_type2"]] <- as.character(scRNA_Mac.SeuObj@meta.data[["MarcoType"]])
-  
   scRNA.SeuObj@meta.data[["Cell_type2"]] <- scRNA.SeuObj@meta.data[["Cell_type"]]
   
   # ## Try
@@ -139,6 +138,31 @@
   combined@graphs <- scRNA.SeuObj@graphs
   combined@reductions <- scRNA.SeuObj@reductions
   DimPlot(combined, reduction = "umap",group.by = "Cell_type2")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  scRNA.SeuObj <- combined
+  rm(combined,scRNA_NMac.SeuObj,scRNA_Mac2.SeuObj)
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type2")  %>% BeautifyggPlot(.,LegPos = c(0.05, 0.15))
+  
+  
+  ## ECM-Receptor
+  CellChatOne(scRNA_Mac.SeuObj,
+              signalingtype = "ECM-Receptor", projectName = "ECM",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "Cell_type2",species = "Human"
+  ) ->   CellChat_ECM.lt
+  
+  ## Cell-Cell Contact
+  CellChatOne(scRNA_Mac.SeuObj,
+              signalingtype = "Cell-Cell Contact", projectName = "CC",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "Cell_type2",species = "Human"
+  ) -> CellChat_CC.lt
+  
+  ## Secreted Signaling
+  CellChatOne(scRNA_Mac.SeuObj,
+              signalingtype = "Secreted Signaling", projectName = "Secret",
+              save.path = paste0(Save.Path,"/B04_CellCell_Interaction"),
+              groupby = "Cell_type2",species = "Human"
+  ) -> CellChat_Secret.lt
   
   ##### save.image #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR_Marco.RData"))
