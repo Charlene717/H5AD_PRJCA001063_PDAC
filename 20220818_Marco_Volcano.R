@@ -82,6 +82,8 @@
     print(Plot.Volcano)
   graphics.off()
 
+  ##### save.image check point1 #####
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR_Marco.RData"))
   
 ##### Cell-cell interaction #####
   
@@ -110,8 +112,11 @@
               groupby = "MarcoType",species = "Human"
   ) -> CellChat_Secret_Mac.lt
   
+  ##### save.image check point2 #####
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR_Marco.RData"))
   
-#### All cell type ####
+  
+  #### All cell type ####
   
   scRNA_Mac.SeuObj@meta.data[["Cell_type2"]] <- as.character(scRNA_Mac.SeuObj@meta.data[["MarcoType"]])
   scRNA.SeuObj@meta.data[["Cell_type2"]] <- scRNA.SeuObj@meta.data[["Cell_type"]]
@@ -164,7 +169,7 @@
               groupby = "Cell_type2",species = "Human"
   ) -> CellChat_Secret.lt
   
-  ##### save.image #####
+  ##### save.image check point3 #####
   save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_Combine_Anno_ReDR_Marco.RData"))
   
   
